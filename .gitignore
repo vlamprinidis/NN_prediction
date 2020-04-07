@@ -1,5 +1,2 @@
-/data/
-/Prof_TF/logs/
-/Prof_TF/profile_env/ 
-/Prof_TF/profiler/
-/venv/
+/.pynb_checkpoints/
+/logs/

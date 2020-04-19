@@ -17,7 +17,6 @@ print( 'Batch = {}, Epochs = {}, Rank = {}, Nodes = {}'.format(BATCH, EPOCHS, RA
 # In[ ]:
 
 
-#get_ipython().run_line_magic('load_ext', 'tensorboard')
 import tensorflow as  tf
 from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import Dense, Conv2D, AveragePooling2D, Flatten

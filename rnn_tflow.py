@@ -21,7 +21,6 @@ import tensorflow as  tf
 from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import Dense, Dropout, LSTM
 from tensorflow import keras
-get_ipython().run_line_magic('load_ext', 'tensorboard')
 
 
 # In[ ]:

@@ -188,7 +188,7 @@ with torch.autograd.profiler.profile() as prof:
 
 
 import helper
-name = 'ptorch_RNN_{}batch_node{}of{}_4CPUs'.format(BATCH,RANK+1,NODES)
+name = 'ptorch_rnn_BATCH{}_RANK{}_NODES{}'.format(BATCH,RANK,NODES)
 full_name = 'ptorch_csv/{}.csv'.format(name)
 
 helper.save_to_csv(prof.key_averages(),full_name)

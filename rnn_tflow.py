@@ -4,6 +4,7 @@
 # In[ ]:
 
 import sys
+import os
 
 BATCH = int(sys.argv[1])
 EPOCHS = int(sys.argv[2])
@@ -64,7 +65,6 @@ if NODES > 1:
     else:
         workers = ["10.0.1.121:8890", "10.0.1.104:8890", "10.0.1.46:8890"]
     import json
-    import os
     os.environ['TF_CONFIG'] = json.dumps({
         'cluster': {
             'worker': workers
@@ -81,8 +81,8 @@ else:
 # In[ ]:
 
 
-logdir = 'logs/tf_RNN_{}batch_node{}of{}_4CPUs'.format(BATCH,RANK+1,NODES)
-get_ipython().system('rm -rf {logdir}')
+logdir = 'logs/tf_rnn_BATCH{}_RANK{}_NODES{}'.format(BATCH,RANK,NODES)
+os.system('rm -rf {}'.format(logdir))
 tensorboard_callback = keras.callbacks.TensorBoard(log_dir=logdir, write_graph=True,update_freq='batch',
                                                   profile_batch=(1,60000//BATCH))
 

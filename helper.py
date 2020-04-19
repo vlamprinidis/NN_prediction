@@ -27,7 +27,7 @@ def save_to_csv(function_events, name):
         'Name',
         'CPU time avg (us)',
         'CPU total (us)',
-	'Self CPU time total',
+	'Self CPU time total (us)',
         'Number of Calls'
     ]
     with open(name, mode='w') as file:

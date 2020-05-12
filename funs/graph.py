@@ -71,16 +71,22 @@ def torch_graph_dict(model, train_loader, keep = False):
     
     return _from_url('http://localhost:6006/data/plugin/graphs/graph?run=train', keep = keep)
 
-def predict_tf(net, x_train, y_train, EPOCHS, BATCH):
+def just_tf(net, x_train, y_train, BATCH):
+    
+    net.fit(x_train, y_train, batch_size = BATCH,
+                epochs=1, steps_per_epoch = 100)
+    
+def tf(net, x_train, y_train, BATCH):
+    
     host = socket.gethostname()
     
     logdir = 'logs/'
     os.system('rm -rf ./logs')
     
-    tensorboard_callback = keras.callbacks.TensorBoard(log_dir=logdir, profile_batch = (2,6) )
+    tensorboard_callback = keras.callbacks.TensorBoard(log_dir=logdir, profile_batch = (10,100) )
 
     net.fit(x_train, y_train, batch_size = BATCH,
-                epochs=1, steps_per_epoch = 6,
+                epochs=1, steps_per_epoch = 100,
                 callbacks=[tensorboard_callback])
 
     dire = './logs/train/plugins/profile'
@@ -95,14 +101,12 @@ def predict_tf(net, x_train, y_train, EPOCHS, BATCH):
     wget.download(url,out)
 
     df = pd.read_csv(out, index_col=0)
+    
+    os.remove(out)
 
     df = df[['Type', 'Operation', '#Occurrences', 'Avg. self-time (us)']]
 #     df = df[df['#Occurrences'] > 1]
     df = df.sort_values(by = ['Type', 'Operation'])
     df = df.reset_index(drop=True)
-
-#     df['rate'] = df['Avg. self-time (us)']/5
-
-#     df['Total'] = df['Avg. self-time (us)']*EPOCHS*(len(x_train)/BATCH)*df['#Occurrences']/5
     
     return df

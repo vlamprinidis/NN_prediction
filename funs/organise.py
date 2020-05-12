@@ -9,10 +9,12 @@ import pickle
 def save_dict(data, fname='data.pkl'):
     with open(fname, 'wb') as fp:
         pickle.dump(data, fp)
+    fp.close()
     
 def load_dict(fname='data.pkl'):
     with open(fname, 'rb') as fp:
         data = pickle.load(fp)
+    fp.close()
         
     return data
     
@@ -24,7 +26,8 @@ def from_tf_dict(nops):
     
 def diff_tf(df,pred):
     s = pd.merge(df, pred, how='inner', on=['Type','Operation'])
-    s['Error %'] = 100*abs(s['Avg. self-time (us)_x'] - s['Avg. self-time (us)_y'])/s['Avg. self-time (us)_x']
+    s['Error'] = abs(s['Avg. self-time (us)_x'] - s['Avg. self-time (us)_y'])
+    s['Error %'] = 100*abs(s['Avg. self-time (us)_x'] - s['Avg. self-time (us)_y'])/s['Avg. self-time (us)_x']    
     
     return s
     

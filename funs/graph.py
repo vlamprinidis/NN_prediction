@@ -7,6 +7,10 @@ import pandas as pd
 
 import os
 
+logdir = '/home/ubuntu/diploma/logs'
+if not os.path.exists(logdir):
+    os.makedirs(logdir)
+
 def run_tensorboard():
     from tensorboard import program
     from tensorboard import default
@@ -18,7 +22,7 @@ def run_tensorboard():
 #         program.get_default_assets_zip_provider(),
         subcommands=[uploader_subcommand.UploaderSubcommand()])
     
-    tb.configure(argv=[None, '--logdir', 'logs', '--port', '6006'])
+    tb.configure(argv=[None, '--logdir', logdir, '--port', '6006'])
     url = tb.launch()
     print(url)
 
@@ -46,7 +50,6 @@ def _from_url(url, keep = False):
 
 def tf_graph_dict(net, keep = False):
     
-    logdir = 'logs/'
     os.system('rm -rf {}'.format(logdir))
         
     tensorboard_callback = keras.callbacks.TensorBoard(log_dir=logdir, write_graph=True)
@@ -58,8 +61,8 @@ def tf_graph_dict(net, keep = False):
 def torch_graph_dict(model, train_loader, keep = False):
     from torch.utils.tensorboard import SummaryWriter
 
-    out = './logs/train/'
-    os.system('rm -rf ./logs')
+    out = '{}/train/'.format(logdir)
+    os.system('rm -rf {}').format(logdir)
 
     writer = SummaryWriter(out)
 
@@ -71,25 +74,28 @@ def torch_graph_dict(model, train_loader, keep = False):
     
     return _from_url('http://localhost:6006/data/plugin/graphs/graph?run=train', keep = keep)
 
+pred_epochs = 1
+pred_start = 10
+pred_stop = 100
+
 def just_tf(net, x_train, y_train, BATCH):
     
     net.fit(x_train, y_train, batch_size = BATCH,
-                epochs=1, steps_per_epoch = 100)
+                epochs=pred_epochs, steps_per_epoch = pred_stop)
     
 def tf(net, x_train, y_train, BATCH):
     
     host = socket.gethostname()
     
-    logdir = 'logs/'
-    os.system('rm -rf ./logs')
+    os.system('rm -rf {}'.format(logdir))
     
-    tensorboard_callback = keras.callbacks.TensorBoard(log_dir=logdir, profile_batch = (10,100) )
+    tensorboard_callback = keras.callbacks.TensorBoard(log_dir=logdir, profile_batch = (pred_start, pred_stop) )
 
     net.fit(x_train, y_train, batch_size = BATCH,
-                epochs=1, steps_per_epoch = 100,
+                epochs=pred_epochs, steps_per_epoch = pred_stop,
                 callbacks=[tensorboard_callback])
 
-    dire = './logs/train/plugins/profile'
+    dire = '{}/train/plugins/profile'.format(logdir)
     [entry] = os.listdir(dire)
 
     os.rename(os.path.join(dire,entry),(os.path.join(dire, 'my')))
@@ -106,7 +112,6 @@ def tf(net, x_train, y_train, BATCH):
 
     df = df[['Type', 'Operation', '#Occurrences', 'Avg. self-time (us)']]
 #     df = df[df['#Occurrences'] > 1]
-    df = df.sort_values(by = ['Type', 'Operation'])
-    df = df.reset_index(drop=True)
+    df = df.sort_values(by = ['Operation', 'Type']).reset_index(drop=True)
     
     return df

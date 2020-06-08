@@ -1,3 +1,15 @@
+import funs
+
+args = funs.parse()
+
+model_str = args.model
+numf = args.num_features
+batch = args.batch
+rank = args.rank
+nodes = args.nodes
+it = args.iteration
+epochs = args.epochs
+
 # before running this script run:
 # tensorboard --logdir /home/ubuntu/logs_tflow --bind_all
 import tensorflow as tf
@@ -5,7 +17,6 @@ import numpy as np
 import os
 import sys
 
-import funs
 import models_tflow as m
 import funs_tflow as f
 
@@ -17,16 +28,6 @@ mapp = {
     'conv1d':(m.conv1d, m.dataset(dim=1)),
     'conv2d':(m.conv2d, m.dataset(dim=2))
 }
-
-args = funs.parse()
-
-model_str = args.model
-numf = args.num_features
-batch = args.batch
-rank = args.rank
-nodes = args.nodes
-it = args.iteration
-epochs = args.epochs
 
 build_func, (x,y) = mapp[model_str]
 

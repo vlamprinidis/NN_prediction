@@ -1,4 +1,5 @@
 import pickle
+import argparse
 
 # dict_ = { (<layer>,<numf>,<batch>,<nodes>,<it>) : <dataframe> }
 
@@ -19,16 +20,17 @@ def update(key, df, fname):
     data[key] = df
     save(data, fname)
 
-def parse(argv):
-    message = 'Arguments (in the order given): Layer Num_features Batch Rank Nodes Iteration\n\n'
-    if(len(argv) < 7 ):
-        print(message)
-        exit()
+def parse():
+    my_parser = argparse.ArgumentParser()
+    my_parser.add_argument('-m', '--model', type=str, required=True)
+    my_parser.add_argument('-numf', '--num_features', type=int, required=True)
+    my_parser.add_argument('-b', '--batch', type=int, required=True)
+    my_parser.add_argument('-r', '--rank', type=int, required=True)
+    my_parser.add_argument('-n', '--nodes', type=int, required=True)
+    my_parser.add_argument('-it', '--iteration', type=int, required=True)
+    my_parser.add_argument('-e', '--epochs', type=int, default=5)
+    args = my_parser.parse_args()
 
-    [_, layer, numf, batch, rank, nodes, it] = argv
-
-    numf, batch, rank, nodes, it = int(numf), int(batch), int(rank), int(nodes), int(it)
-
-    print( 'Layer = {}, Num_features = {}, Batch = {}, Rank = {}, Nodes = {}, Iteration = {}\n\n'.format(layer, numf, batch, rank, nodes, it))
+    print(args)
     
-    return layer, numf, batch, rank, nodes, it
+    return args

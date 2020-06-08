@@ -4,29 +4,27 @@ import torchvision
 import torchvision.transforms as transforms
 import torch.nn.functional as F
 
-def dataset2d():
-    trans = torchvision.transforms.Compose([
-        transforms.Resize(32),
-        transforms.ToTensor(),
-        transforms.Normalize((0.1307,), (0.3081,))
-    ])
-    train_dataset = torchvision.datasets.MNIST(
-        root='../../torch_data/',
-        train=True, 
-        transform=trans, 
-        download=True
-    )
-    return train_dataset
+criterion = nn.CrossEntropyLoss
+optimizer = torch.optim.SGD
+learning_rate = 0.01
 
-def dataset1d():
-    trans = torchvision.transforms.Compose([
-        transforms.Resize(32),
-        transforms.ToTensor(),
-        transforms.Normalize((0.1307,), (0.3081,)),
-        transforms.Lambda(lambda x: x.view(1,-1))
-    ])
+def dataset(dim):
+    if(dim == 2):
+        trans = torchvision.transforms.Compose([
+            transforms.Resize(32),
+            transforms.ToTensor(),
+            transforms.Normalize((0.1307,), (0.3081,))
+        ])
+    else:# dim == 1
+        trans = torchvision.transforms.Compose([
+            transforms.Resize(32),
+            transforms.ToTensor(),
+            transforms.Normalize((0.1307,), (0.3081,)),
+            transforms.Lambda(lambda x: x.view(1,-1))
+        ])
+        
     train_dataset = torchvision.datasets.MNIST(
-        root='../../torch_data/',
+        root='../../mnist_torch/',
         train=True, 
         transform=trans, 
         download=True
@@ -44,7 +42,7 @@ def avg_size_out(size_in, kern, stride):
     return size_out
 
 def conv1d(numf):
-    train_dataset = dataset1d()
+    print('This is torch-conv1d \n')
     
     conv_out = conv_size_out(32*32, 5, 1)
     lin_in = numf * ( int(conv_out) )    
@@ -61,10 +59,10 @@ def conv1d(numf):
         )
     )
     
-    return model, train_dataset
+    return model
 
 def conv2d(numf):
-    train_dataset = dataset()
+    print('This is torch-conv2d \n')
     
     conv_out = conv_size_out(32, 5, 1)
     lin_in = numf * ( int(conv_out) ** 2 )    
@@ -81,7 +79,7 @@ def conv2d(numf):
         )
     )
     
-    return model, train_dataset
+    return model
 
             
             

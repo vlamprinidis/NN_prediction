@@ -1,61 +1,48 @@
 # before running this script run:
-# tensorboard --logdir /home/ubuntu/tf_logs --bind_all
-
+# tensorboard --logdir /home/ubuntu/logs_tflow --bind_all
 import tensorflow as tf
 import numpy as np
 import os
 import sys
 
 import funs
-import models_tflow as mod
+import models_tflow as m
+import funs_tflow as f
 
 # dict_ = { (<layer>,<numf>,<batch>,<nodes>,<it>) : <dataframe> }
+
 mapp = {
-    'avg1d':mod.avg1d,
-    'avg2d':mod.avg2d,
-    'conv1d':mod.conv1d,
-    'conv2d':mod.conv2d
+    'avg1d':( m.avg1d, m.dataset(dim=1) ),
+    'avg2d':(m.avg2d, m.dataset(dim=2)),
+    'conv1d':(m.conv1d, m.dataset(dim=1)),
+    'conv2d':(m.conv2d, m.dataset(dim=2))
 }
 
-# Distribute tensorflow if needed
-def tf_distribute(build_func, numf, rank, nodes):
-    if nodes > 1:
-        workers = []
-        if nodes == 2:
-            workers = ["10.0.1.121:8890", "10.0.1.104:8890"]
-        else:
-            workers = ["10.0.1.121:8890", "10.0.1.104:8890", "10.0.1.46:8890"]
-        import json
-        os.environ['TF_CONFIG'] = json.dumps({
-            'cluster': {
-                'worker': workers
-            },
-            'task': {'type': 'worker', 'index': rank}
-        })
-        strategy = tf.distribute.experimental.MultiWorkerMirroredStrategy()
-        with strategy.scope():
-            model = build_func(numf)
-    else:
-        model = build_func(numf)
-    
-    return model
+args = funs.parse()
 
-layer, numf, batch, rank, nodes, it = funs.parse(sys.argv)
+model_str = args.model
+numf = args.num_features
+batch = args.batch
+rank = args.rank
+nodes = args.nodes
+it = args.iteration
+epochs = args.epochs
 
-model,x,y = tf_distribute(mapp[layer], numf, rank, nodes)
+build_func, (x,y) = mapp[model_str]
 
-epochs = 1
-if rank == 0:
-    logdir = '/home/ubuntu/tf_logs'
-    os.system('rm -rf {}'.format(logdir))
+model = f.prepare(
+    build_func = build_func,
+    x = x, y = y,
+    numf = numf, 
+    rank = rank, 
+    nodes = nodes
+)
 
-    with tf.profiler.experimental.Profile(logdir):
-        model.fit(x, y, batch_size = batch, epochs = epochs)
-        pass
-
-    df = funs.get_tf_ops(logdir)
-    numf, batch, nodes, it = str(numf), str(batch), str(nodes), str(it)
-    funs.update(key=(layer, 'feat_' + numf, 'batch_' + batch, 'nodes_' + nodes, 'it_' + it), df=df, fname='tf.pkl')
-    
-else:
-    model.fit(x, y, batch_size = batch, epochs = epochs)
+f.profile(
+    model = model, 
+    x = x, y = y,
+    batch = batch, 
+    epochs = epochs, 
+    rank = rank, 
+    nodes = nodes
+)

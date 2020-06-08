@@ -10,6 +10,10 @@ from tensorflow.keras.models import Sequential
 
 from tensorflow.keras.layers import AveragePooling1D, AveragePooling2D, Conv1D, Conv2D, Dense, Dropout, ELU, Embedding, Flatten, GaussianDropout, GaussianNoise, MaxPool1D, MaxPool2D, ReLU, Softmax
 
+opt = tf.keras.optimizers.SGD(learning_rate=0.01)
+loss = 'categorical_crossentropy'
+metric = 'accuracy'
+
 def dataset(dim=2):
     def pad(arr):
         return np.pad(arr, ((0,0),(2,2),(2,2)))
@@ -30,11 +34,7 @@ def dataset(dim=2):
     # one-hot encode the labels
     y = tf.keras.utils.to_categorical(y_train, 10)
     
-    return x, y, input_shape
-
-opt = tf.keras.optimizers.SGD(learning_rate=0.01)
-loss = 'categorical_crossentropy'
-metric = 'accuracy'
+    return x, y
 
 def base(layer):    
     model = Sequential()
@@ -47,30 +47,34 @@ def base(layer):
     return model
 
 def conv1d(numf):
-    x,y,input_shape = dataset(dim=1)
+    print('This is tflow-conv1d \n')
+    
     model = base(Conv1D(filters = numf, 
                        kernel_size = 5))
 
-    return model,x,y
+    return model
     
 def conv2d(numf):
-    x,y,input_shape = dataset(dim=2)
+    print('This is tflow-conv2d \n')
+    
     model = base(Conv2D(filters = numf, 
                        kernel_size = 5))
 
-    return model,x,y
+    return model
 
 def avg1d(numf):
-    x,y,_ = dataset(dim=1)
+    print('This is tflow-avg1d \n')
+    
     model = base(AveragePooling1D(pool_size = numf))
     
-    return model,x,y
+    return model
     
 def avg2d(numf):
-    x,y,input_shape = dataset(dim=2)
+    print('This is tflow-avg2d \n')
+    
     model = base(AveragePooling2D(pool_size = numf))
     
-    return model,x,y
+    return model
 
 
 # def tf_

@@ -1,14 +1,3 @@
-import funs as h
-
-args = h.parse()
-
-model_str = args.model
-numf = args.num_features
-batch = args.batch
-nodes = args.nodes
-it = args.iteration
-epochs = args.epochs
-
 import torch
 import torch.nn as nn 
 import torchvision
@@ -26,6 +15,17 @@ mapp = {
     'conv1d':( m.conv1d, ds(dim=1) ),
     'conv2d':( m.conv2d, ds(dim=2) )
 }
+
+import funs as h
+
+args = h.parse( list( mapp.keys() ) )
+
+model_str = args.model
+numf = args.num_features
+batch = args.batch
+nodes = args.nodes
+it = args.iteration
+epochs = args.epochs
 
 build_func, train_dataset = mapp[model_str]
 

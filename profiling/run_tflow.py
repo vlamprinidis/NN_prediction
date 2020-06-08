@@ -1,11 +1,10 @@
-import funs
+import funs as h
 
-args = funs.parse()
+args = h.parse()
 
 model_str = args.model
 numf = args.num_features
 batch = args.batch
-rank = args.rank
 nodes = args.nodes
 it = args.iteration
 epochs = args.epochs
@@ -31,19 +30,6 @@ mapp = {
 
 build_func, (x,y) = mapp[model_str]
 
-model = f.prepare(
-    build_func = build_func,
-    x = x, y = y,
-    numf = numf, 
-    rank = rank, 
-    nodes = nodes
-)
+model = f.prepare(build_func, x, y, numf, nodes)
 
-f.profile(
-    model = model, 
-    x = x, y = y,
-    batch = batch, 
-    epochs = epochs, 
-    rank = rank, 
-    nodes = nodes
-)
+f.profile(model, x, y, batch, epochs, nodes, use_prof = h.rank == 0)

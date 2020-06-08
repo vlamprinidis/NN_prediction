@@ -1,11 +1,10 @@
-import funs
+import funs as h
 
-args = funs.parse()
+args = h.parse()
 
 model_str = args.model
 numf = args.num_features
 batch = args.batch
-rank = args.rank
 nodes = args.nodes
 it = args.iteration
 epochs = args.epochs
@@ -30,20 +29,6 @@ mapp = {
 
 build_func, train_dataset = mapp[model_str]
 
-model, train_loader = f.prepare(
-    build_func = build_func,
-    train_dataset = train_dataset,
-    numf = numf,
-    batch = batch,
-    rank = rank,
-    nodes = nodes
-)
+model, train_loader = f.prepare(build_func, train_dataset, numf, batch, nodes)
 
-f.profile(
-    model = model, 
-    train_loader = train_loader, 
-    epochs = epochs, 
-    rank = rank, 
-    criterion = m.criterion(), 
-    optimizer = m.optimizer(model.parameters(), lr = m.learning_rate)
-)
+f.profile(model, train_loader, epochs, m.criterion(), m.optimizer(model.parameters(), lr = 0.01), use_prof = h.rank == 0)

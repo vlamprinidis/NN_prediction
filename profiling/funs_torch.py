@@ -1,5 +1,6 @@
 import torch
 import csv
+import funs as h
 
 def give_evt_lst(evt):
     return [evt.key, str(evt.cpu_time), 
@@ -25,7 +26,8 @@ def get_ops(source):
     
     return False
 
-def prepare(build_func, train_dataset, numf, batch, rank, nodes):
+def prepare(build_func, train_dataset, numf, batch, nodes):
+    rank = h.rank
     if nodes > 1:
         import os
         import torch.distributed as dist
@@ -75,7 +77,7 @@ def prepare(build_func, train_dataset, numf, batch, rank, nodes):
 
     return model, train_loader
 
-def profile(model, train_loader, epochs, rank, criterion, optimizer):
+def profile(model, train_loader, epochs, criterion, optimizer, use_prof):
     def train():
         total_step = len(train_loader)
         print(total_step)
@@ -97,7 +99,7 @@ def profile(model, train_loader, epochs, rank, criterion, optimizer):
                     print ('Epoch [{}/{}], Step [{}/{}], Loss: {}' 
                            .format(epoch+1, epochs, i+1, total_step, loss))
     
-    if(rank == 0):
+    if use_prof:
         with torch.autograd.profiler.profile() as prof:
             train()
             

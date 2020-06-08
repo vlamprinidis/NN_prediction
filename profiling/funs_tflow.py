@@ -2,12 +2,11 @@ import tensorflow as tf
 import numpy as np
 import pandas as pd
 import os
-import socket
 import wget
 import funs as h
 
 def _save(logdir, target):
-    host = socket.gethostname()
+    host = h.host
     dire = '{}/plugins/profile'.format(logdir)
     [entry] = os.listdir(dire)
 
@@ -25,7 +24,8 @@ def get_ops(source):
     
     return df
 
-def prepare(build_func, x, y, numf, rank, nodes):
+def prepare(build_func, x, y, numf, nodes):
+    rank = h.rank
     if nodes > 1:
         workers = []
         if nodes == 2:
@@ -47,8 +47,8 @@ def prepare(build_func, x, y, numf, rank, nodes):
     
     return model
 
-def profile(model, x, y, batch, epochs, rank, nodes=1):
-    if rank == 0:
+def profile(model, x, y, batch, epochs, nodes, use_prof):
+    if use_prof:
         logdir = '/home/ubuntu/logs_tflow'
         os.system('rm -rf {}'.format(logdir))
 

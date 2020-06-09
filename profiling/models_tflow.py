@@ -47,7 +47,7 @@ def base(layer):
     return model
 
 def conv1d(numf):
-    print('This is tflow-conv1d \n')
+    print('\n\nThis is tflow-conv1d \n\n')
     
     model = base(Conv1D(filters = numf, 
                        kernel_size = 5))
@@ -55,7 +55,7 @@ def conv1d(numf):
     return model
     
 def conv2d(numf):
-    print('This is tflow-conv2d \n')
+    print('\n\nThis is tflow-conv2d \n\n')
     
     model = base(Conv2D(filters = numf, 
                        kernel_size = 5))
@@ -63,14 +63,14 @@ def conv2d(numf):
     return model
 
 def avg1d(numf):
-    print('This is tflow-avg1d \n')
+    print('\n\nThis is tflow-avg1d \n\n')
     
     model = base(AveragePooling1D(pool_size = numf))
     
     return model
     
 def avg2d(numf):
-    print('This is tflow-avg2d \n')
+    print('\n\nThis is tflow-avg2d \n\n')
     
     model = base(AveragePooling2D(pool_size = numf))
     

@@ -5,6 +5,7 @@ import os
 import wget
 import funs as h
 
+# This can overwrite the file, don't use outside funs_tflow
 def _save(logdir, target):
     host = h.host
     dire = '{}/plugins/profile'.format(logdir)
@@ -49,6 +50,8 @@ def prepare(build_func, x, y, numf, nodes):
 
 def profile(model, x, y, batch, epochs, nodes, use_prof):
     if use_prof:
+        prof_file = './out_tflow.csv'
+        
         logdir = '/home/ubuntu/logs_tflow'
         os.system('rm -rf {}'.format(logdir))
 
@@ -56,9 +59,11 @@ def profile(model, x, y, batch, epochs, nodes, use_prof):
             model.fit(x, y, batch_size = batch, epochs = epochs)
             pass
 
-        _save(logdir, './out_tflow.csv')
-#         numf, batch, nodes, it = str(numf), str(batch), str(nodes), str(it)
-#         h.update(key=(layer, 'feat_' + numf, 'batch_' + batch, 'nodes_' + nodes, 'it_' + it), df=df, fname='tf.pkl')
+        _save(logdir, prof_file)
+        
+        return prof_file
 
     else:
         model.fit(x, y, batch_size = batch, epochs = epochs)
+        
+        return None

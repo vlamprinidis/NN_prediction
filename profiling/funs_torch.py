@@ -1,11 +1,13 @@
 import torch
 import csv
 import funs as h
+import pandas as pd
 
 def give_evt_lst(evt):
     return [evt.key, str(evt.cpu_time), 
             str(evt.cpu_time_total), str(evt.self_cpu_time_total), str(evt.count)]
 
+# This can overwrite the file, don't use outside funs_torch
 def _save(function_events, target):
     headers = [
         'Name',
@@ -23,8 +25,10 @@ def _save(function_events, target):
             writer.writerow( give_evt_lst(evt) )
 
 def get_ops(source):
+    df = pd.read_csv(source, index_col=0)
+    df = df.sort_values(by = ['Name'])
     
-    return False
+    return df
 
 def prepare(build_func, train_dataset, numf, batch, nodes):
     rank = h.rank
@@ -100,11 +104,16 @@ def profile(model, train_loader, epochs, criterion, optimizer, use_prof):
                            .format(epoch+1, epochs, i+1, total_step, loss))
     
     if use_prof:
+        prof_file = './out_torch.csv'
         with torch.autograd.profiler.profile() as prof:
             train()
             
         # save results
-        _save(prof.key_averages(), 'out_torch.csv')
+        _save(prof.key_averages(), prof_file)
+        
+        return prof_file
         
     else:
         train()
+        
+        return None

@@ -26,9 +26,23 @@ batch = args.batch
 nodes = args.nodes
 it = args.iteration
 epochs = args.epochs
+use_prof=args.use_profiler
 
 build_func, train_dataset = mapp[model_str]
 
 model, train_loader = f.prepare(build_func, train_dataset, numf, batch, nodes)
 
-f.profile(model, train_loader, epochs, m.criterion(), m.optimizer(model.parameters(), lr = 0.01), use_prof = h.rank == 0)
+prof = f.profile(model, train_loader, epochs, 
+                 m.criterion(), m.optimizer(model.parameters(), lr = 0.01), 
+                 use_prof = use_prof)
+
+if prof != None:
+    df = f.get_ops(prof)
+    
+    key = h.my_key(model_str, numf, batch, nodes, it)
+    value = h.my_value(df, epochs)
+    
+    target = './torch.pkl'
+    h.update(key, value, target)
+
+print('\n\n')

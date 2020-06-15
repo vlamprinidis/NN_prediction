@@ -24,7 +24,7 @@ def dataset(dim):
         ])
         
     train_dataset = torchvision.datasets.MNIST(
-        root='/home/ubuntu/mnist_torch',
+        root='./mnist_torch',
         train=True, 
         transform=trans, 
         download=False

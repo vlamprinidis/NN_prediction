@@ -27,7 +27,7 @@ def dataset(dim):
         root='./mnist_torch',
         train=True, 
         transform=trans, 
-        download=False
+        download=True
     )
     return train_dataset
 

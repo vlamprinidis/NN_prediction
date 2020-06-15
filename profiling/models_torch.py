@@ -24,10 +24,10 @@ def dataset(dim):
         ])
         
     train_dataset = torchvision.datasets.MNIST(
-        root='../../mnist_torch/',
+        root='/home/ubuntu/mnist_torch',
         train=True, 
         transform=trans, 
-        download=True
+        download=False
     )
     return train_dataset
 

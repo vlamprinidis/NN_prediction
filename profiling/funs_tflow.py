@@ -25,7 +25,7 @@ def get_ops(source):
     
     return df
 
-def prepare(build_func, x, y, numf, nodes):
+def distribute(model_class, nodes):
     rank = h.rank
     if nodes > 1:
         workers = []
@@ -42,13 +42,12 @@ def prepare(build_func, x, y, numf, nodes):
         })
         strategy = tf.distribute.experimental.MultiWorkerMirroredStrategy()
         with strategy.scope():
-            model = build_func(numf)
+            model_class.create()
     else:
-        model = build_func(numf)
-    
-    return model
+        model_class.create()
 
-def profile(model, x, y, batch, epochs, nodes, use_prof):
+def profile(model_class, batch, epochs, use_prof):
+    model, x, y = model_class.model, model_class.x, model_class.y
     if use_prof:
         prof_file = './out_tflow.csv'
         

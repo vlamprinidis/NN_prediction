@@ -7,19 +7,9 @@ import sys
 
 import models_tflow as m
 import funs_tflow as f
-
-# dict_ = { (<layer>,<numf>,<batch>,<nodes>,<it>) : <dataframe> }
-
-mapp = {
-    'avg1d':( m.avg1d, m.dataset(dim=1) ),
-    'avg2d':(m.avg2d, m.dataset(dim=2)),
-    'conv1d':(m.conv1d, m.dataset(dim=1)),
-    'conv2d':(m.conv2d, m.dataset(dim=2))
-}
-
 import funs as h
 
-args = h.parse( list( mapp.keys() ) )
+args = h.parse( list( m.mapp.keys() ) )
 
 model_str = args.model
 numf = args.num_features
@@ -29,11 +19,11 @@ it = args.iteration
 epochs = args.epochs
 use_prof=args.use_profiler
 
-build_func, (x,y) = mapp[model_str]
+model_class = m.mapp[model_str](numf)
 
-model = f.prepare(build_func, x, y, numf, nodes)
+f.distribute(model_class, nodes)
 
-prof = f.profile(model, x, y, batch, epochs, nodes, 
+prof = f.profile(model_class, batch, epochs, 
                  use_prof = h.rank == 0 and use_prof)
 
 if prof != None:

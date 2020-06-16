@@ -1,5 +1,6 @@
 import subprocess as sub
 
+# Tensorflow
 cmd = '/home/ubuntu/.night/bin/python3 /home/ubuntu/diploma/profiling/run_torch.py -m conv1d -numf 32 -b 32 -n 3 -e 1'
 
 p1 = sub.Popen(cmd, shell=True, stdout=sub.PIPE)

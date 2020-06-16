@@ -80,7 +80,7 @@ def parse(model_lst):
     my_parser.add_argument('-m', '--model', type=str, required=True, 
                            choices=model_lst)
     my_parser.add_argument('-numf', '--num_features', type=int, required=True,
-                          choices=[32, 128, 512, 1024, 4096])
+                          choices=[16, 32, 64, 128, 256])
     my_parser.add_argument('-b', '--batch', type=int, required=True, 
                            choices=[32, 64, 128, 256, 512])
     my_parser.add_argument('-n', '--nodes', type=int, required=True,

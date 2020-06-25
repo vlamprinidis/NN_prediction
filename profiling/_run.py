@@ -3,6 +3,11 @@ import subprocess as sub
 # Tensorflow
 cmd = '/home/ubuntu/.night/bin/python3 /home/ubuntu/diploma/profiling/run_torch.py -m conv1d -numf 32 -b 32 -n 3 -e 1'
 
+
+
+# PyTorch
+cmd = '/home/ubuntu/.night/bin/python3 /home/ubuntu/diploma/profiling/run_torch.py -m conv1d -numf 32 -b 32 -n 3 -e 1'
+
 p1 = sub.Popen(cmd, shell=True, stdout=sub.PIPE)
 p2 = sub.Popen('ssh vm2 "{}"'.format(cmd+' -use_prof False'), shell=True, stdout=sub.PIPE)
 p3 = sub.Popen('ssh vm3 "{}"'.format(cmd+' -use_prof False'), shell=True, stdout=sub.PIPE)

@@ -30,8 +30,13 @@ def get_ops(source):
     
     return df
 
-def prepare(build_func, train_dataset, numf, batch, nodes):
+def prepare(model_class, batch, nodes):
     rank = h.rank
+    train_dataset = model_class.train_dataset
+    numf = model_class.numf
+    
+    model_class.create()
+    
     if nodes > 1:
         import os
         import torch.distributed as dist
@@ -68,7 +73,7 @@ def prepare(build_func, train_dataset, numf, batch, nodes):
             sampler = train_sampler
         )
 
-        model = DDP( build_func(numf) )
+        model_class.model = DDP( model_class.model )
 
     else:
         train_loader = torch.utils.data.DataLoader(
@@ -76,12 +81,15 @@ def prepare(build_func, train_dataset, numf, batch, nodes):
             batch_size = batch,
             shuffle = True
         )
-        
-        model = build_func(numf)
 
-    return model, train_loader
+    model_class.train_loader = train_loader
 
-def profile(model, train_loader, epochs, criterion, optimizer, use_prof):
+def profile(model_class, epochs, use_prof):
+    model = model_class.model
+    train_loader = model_class.train_loader
+    criterion = model_class.criterion
+    optimizer = model_class.optimizer
+    
     def train():
         total_step = len(train_loader)
         print(total_step)
@@ -99,7 +107,7 @@ def profile(model, train_loader, epochs, criterion, optimizer, use_prof):
                 loss.backward()
                 optimizer.step()
 
-                if (i+1) % 100 == 0:
+                if (i+1) % 10 == 0:
                     print ('Epoch [{}/{}], Step [{}/{}], Loss: {}' 
                            .format(epoch+1, epochs, i+1, total_step, loss))
     

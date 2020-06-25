@@ -96,8 +96,6 @@ def profile(model_class, epochs, use_prof):
 
         for epoch in range(epochs):
             for i, (images, labels) in enumerate(train_loader):
-                labels = labels
-
                 # Forward pass
                 outputs = model(images)            
                 loss = criterion(outputs, labels)

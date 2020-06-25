@@ -15,28 +15,6 @@ opt = tf.keras.optimizers.SGD(learning_rate=0.01)
 loss = 'categorical_crossentropy'
 metric = 'accuracy'
 
-# def dataset(dim=2):
-#     def pad(arr):
-#         return np.pad(arr, ((0,0),(2,2),(2,2)))
-
-#     mnist = tf.keras.datasets.mnist
-#     (x_train, y_train), _ = mnist.load_data()
-#     x_train = x_train/255.0
-#     x = pad(x_train)
-
-#     rows, cols = 32, 32
-#     if dim==2:
-#         x = x.reshape(x.shape[0], rows, cols, 1)
-#         input_shape = (rows, cols, 1)
-#     else: # dim==1
-#         x = x.reshape(x.shape[0], rows, cols)
-#         input_shape = (rows, cols)
-#     x = x.astype('float32')
-#     # one-hot encode the labels
-#     y = tf.keras.utils.to_categorical(y_train, 10)
-    
-#     return x, y
-
 def dummy(dim, n):
     ds_size = 5000
     out_size = 10

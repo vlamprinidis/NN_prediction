@@ -38,7 +38,23 @@ def max_size_out(size_in, kern, stride):
     dilation = 1
     return (size_in + 2*pad - dilation*(kern - 1) - 1) // stride + 1
     
+def base(layer, lin_in):
+    model = nn.Sequential(
+        layer,
+        nn.Flatten(),
+        nn.Linear(
+            in_features = lin_in,
+            out_features = 10
+        )
+    )
+    
+    return model
+    
 class Test:
+    def __init__(self, numf, dim):
+        self.train_dataset = dummy(dim, numf)
+        self.numf = numf
+        
     def sett(self, model):
         learning_rate = 0.01
         self.criterion = nn.CrossEntropyLoss()
@@ -47,16 +63,14 @@ class Test:
         
 class Dim1(Test):
     def __init__(self, numf):
-        self.train_dataset = dummy(1,numf)
-        self.numf = numf
+        super().__init__(numf, 1)
         
     def sett(self, model):
         super().sett(model)
         
 class Dim2(Test):
     def __init__(self, numf):
-        self.train_dataset = dummy(2,numf)
-        self.numf = numf
+        super().__init__(numf, 2)
         
     def sett(self, model):
         super().sett(model)
@@ -68,25 +82,12 @@ class conv1d(Dim1):
     def create(self):
         print('\n\nThis is torch-conv1d \n\n')
         numf = self.numf
-        
         out_channels = 6
         kern = 5
         stride = 1
-
-        lin_in = out_channels * ( conv_size_out(numf, kern, stride) )    
-
-        model = nn.Sequential(
-              nn.Conv1d(
-                  in_channels = 1, out_channels = out_channels,
-                  kernel_size = kern, stride = stride
-              ),
-              nn.Flatten(),
-              nn.Linear(
-                in_features = lin_in,
-                out_features = 10
-            )
-        )
+        lin_in = out_channels * ( conv_size_out(numf, kern, stride) )
         
+        model = base( nn.Conv1d(in_channels = 1, out_channels = out_channels, kernel_size = kern, stride = stride), lin_in )
         super().sett(model)
 
 class conv2d(Dim2):
@@ -96,25 +97,12 @@ class conv2d(Dim2):
     def create(self):
         print('This is torch-conv2d \n')
         numf = self.numf
-        
         out_channels = 6
         kern = 5
         stride = 1
-
         lin_in = out_channels * ( conv_size_out(numf, kern, stride) ** 2 )    
 
-        model = nn.Sequential(
-              nn.Conv2d(
-                  in_channels = 1, out_channels = out_channels,
-                  kernel_size = kern, stride = stride
-              ),
-              nn.Flatten(),
-              nn.Linear(
-                in_features = lin_in,
-                out_features = 10
-            )
-        )
-        
+        model = base( nn.Conv2d(in_channels = 1, out_channels = out_channels, kernel_size = kern, stride = stride), lin_in)     
         super().sett(model)
         
 class avg1d(Dim1):
@@ -126,18 +114,9 @@ class avg1d(Dim1):
         numf = self.numf
         kern = 5
         stride = 1
-        
         lin_in = avg_size_out(numf, kern, stride)
         
-        model = nn.Sequential(
-            nn.AvgPool1d( kernel_size = kern, stride = stride ),
-            nn.Flatten(),
-            nn.Linear(
-                in_features = lin_in,
-                out_features = 10
-            )
-        )
-        
+        model = base(nn.AvgPool1d(kernel_size = kern, stride = stride), lin_in)
         super().sett(model)
 
 class avg2d(Dim2):
@@ -149,18 +128,9 @@ class avg2d(Dim2):
         numf = self.numf
         kern = 5
         stride = 1
-        
         lin_in = avg_size_out(numf, kern, stride) ** 2
         
-        model = nn.Sequential(
-            nn.AvgPool2d( kernel_size = kern, stride = stride ),
-            nn.Flatten(),
-            nn.Linear(
-                in_features = lin_in,
-                out_features = 10
-            )
-        )
-        
+        model = base( nn.AvgPool2d( kernel_size = kern, stride = stride ), lin_in)
         super().sett(model)
         
 class dense(Dim2):
@@ -170,7 +140,6 @@ class dense(Dim2):
     def create(self):
         print('This is torch-linear \n')
         numf = self.numf
-        
         lin_in = numf ** 2
         
         model = nn.Sequential(
@@ -192,18 +161,9 @@ class max1d(Dim1):
         numf = self.numf
         kern = 5
         stride = 1
-
         lin_in = max_size_out(numf, kern, stride)
         
-        model = nn.Sequential(
-            nn.MaxPool1d( kernel_size = kern, stride = stride ),
-            nn.Flatten(),
-            nn.Linear(
-                in_features = lin_in,
-                out_features = 10
-            )
-        )
-        
+        model = base( nn.MaxPool1d( kernel_size = kern, stride = stride ), lin_in)        
         super().sett(model) 
 
 class max2d(Dim2):
@@ -215,18 +175,9 @@ class max2d(Dim2):
         numf = self.numf
         kern = 5
         stride = 1
-        
         lin_in = max_size_out(numf, kern, stride) ** 2
         
-        model = nn.Sequential(
-            nn.MaxPool2d( kernel_size = kern, stride = stride ),
-            nn.Flatten(),
-            nn.Linear(
-                in_features = lin_in,
-                out_features = 10
-            )
-        )
-        
+        model = base( nn.MaxPool2d( kernel_size = kern, stride = stride ), lin_in)
         super().sett(model)         
         
 mapp = {

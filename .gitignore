@@ -5,3 +5,4 @@ profiling/__pycache__/
 profiling/*.ipynb
 profiling/*.pkl
 profiling/*.csv
+profiling/_run.py

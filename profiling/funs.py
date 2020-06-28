@@ -72,19 +72,23 @@ def get_value(model_str, numf, batch, nodes, it, fname):
         
     return value
 
-def parse(model_lst):
+numf_ls = [16, 32, 64, 128, 256]
+batch_ls = [32, 64, 128, 256, 512]
+nodes_ls = [1,2,3]
+
+def parse(model_ls):
     print('\n')
     print('This is ' + host)
 
     my_parser = argparse.ArgumentParser()
     my_parser.add_argument('-m', '--model', type=str, required=True, 
-                           choices=model_lst)
+                           choices = model_ls)
     my_parser.add_argument('-numf', '--num_features', type=int, required=True,
-                          choices=[16, 32, 64, 128, 256])
+                          choices = numf_ls )
     my_parser.add_argument('-b', '--batch', type=int, required=True, 
-                           choices=[32, 64, 128, 256, 512])
+                           choices = batch_ls )
     my_parser.add_argument('-n', '--nodes', type=int, required=True,
-                          choices=[1, 2, 3])
+                          choices = nodes_ls )
     my_parser.add_argument('-it', '--iteration', type=int, default=1)
     my_parser.add_argument('-e', '--epochs', type=int, default=5)
     my_parser.add_argument('-use_prof', '--use_profiler', type=bool, default=True)

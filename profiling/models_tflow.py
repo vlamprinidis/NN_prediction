@@ -130,3 +130,5 @@ mapp = {
     'max2d': max2d,
     'dense': dense
 }
+
+model_ls = mapp.keys()

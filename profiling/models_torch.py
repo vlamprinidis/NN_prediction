@@ -5,10 +5,6 @@ import torchvision.transforms as transforms
 import torch.nn.functional as F
 from numpy.random import RandomState as R
 
-criterion = nn.CrossEntropyLoss
-optimizer = torch.optim.SGD
-learning_rate = 0.01
-
 def dummy(dim, n):
     ds_size = 5000
     out_size = 10
@@ -242,3 +238,5 @@ mapp = {
     'max2d': max2d,
     'dense': dense
 }
+
+model_ls = mapp.keys()

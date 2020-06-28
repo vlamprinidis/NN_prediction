@@ -40,7 +40,7 @@ def prepare(model_class, batch, nodes):
     if nodes > 1:
         import os
         import torch.distributed as dist
-        from torch.nn.parallel import DistributedDataParallelCPU as DDP
+        from torch.nn.parallel import DistributedDataParallel as DDP
 
         def setup(rank, world_size):
             os.environ['MASTER_ADDR'] = '10.0.1.121'

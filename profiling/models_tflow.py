@@ -6,14 +6,9 @@ from numpy.random import RandomState as R
 # Tensorflow
 
 import tensorflow as  tf
-from tensorflow.keras import Model
 from tensorflow.keras.models import Sequential
-
-from tensorflow.keras.layers import AveragePooling1D, AveragePooling2D, Conv1D, Conv2D, Dense, Dropout, ELU, Embedding, Flatten, GaussianDropout, GaussianNoise, MaxPool1D, MaxPool2D, ReLU, Softmax
-
-opt = tf.keras.optimizers.SGD(learning_rate=0.01)
-loss = 'categorical_crossentropy'
-metric = 'accuracy'
+from tensorflow.keras import layers  
+from tensorflow.keras.layers import Dense, Flatten
 
 def dummy(dim, n):
     ds_size = 5000
@@ -35,70 +30,96 @@ def base(layer):
     model.add( layer )
     model.add( Flatten() )
     model.add( Dense(units = 10) )
-    model.compile(loss=loss, optimizer=opt,
-                 metrics=[metric])
     
     return model
 
-class conv1d:
-    def __init__(self, n):
-        self.x, self.y = dummy(1,n)
+class Test:    
+    def sett(self, model):
+        opt = tf.keras.optimizers.SGD(learning_rate=0.01)
+        loss = 'categorical_crossentropy'
+        metric = 'accuracy'
+        
+        model.compile(loss=loss, optimizer=opt,
+                     metrics=[metric])
+        
+        self.model = model
+        
+class Dim1(Test):
+    def __init__(self, numf):
+        self.numf = numf
+        self.x, self.y = dummy(1,numf)
+
+    def sett(self, model):
+        super().sett(model)
+
+class Dim2(Test):
+    def __init__(self, numf):
+        self.numf = numf
+        self.x, self.y = dummy(2,numf)
+
+    def sett(self, model):
+        super().sett(model)
+
+class conv1d(Dim1):
+    def __init__(self, numf):
+        super().__init__(numf)
     
     def create(self):
         print('\n\nThis is tflow-conv1d \n\n')
-        self.model = base(Conv1D(filters = 6, kernel_size = 5))
+        super().sett( base(layers.Conv1D(filters = 6, kernel_size = 5)) )
 
-class conv2d:
-    def __init__(self, n):
-        self.x, self.y = dummy(2,n)
+class conv2d(Dim2):
+    def __init__(self, numf):
+        super().__init__(numf)
         
     def create(self):
         print('\n\nThis is tflow-conv2d \n\n')
-        self.model = base(Conv2D(filters = 6, kernel_size = 5))
+        super().sett( base(layers.Conv2D(filters = 6, kernel_size = 5)) )
 
-class avg1d:
-    def __init__(self, n):
-        self.x, self.y = dummy(1,n)
+class avg1d(Dim1):
+    def __init__(self, numf):
+        super().__init__(numf)
     
     def create(self):
         print('\n\nThis is tflow-avg1d \n\n')
-        self.model = base(AveragePooling1D(pool_size = 2))
+        super().sett( base(layers.AveragePooling1D(pool_size = 2)) )
     
-    
-class avg2d:
-    def __init__(self, n):
-        self.x, self.y = dummy(2,n)
+class avg2d(Dim2):
+    def __init__(self, numf):
+        super().__init__(numf)
         
     def create(self):
         print('\n\nThis is tflow-avg2d \n\n')
-        self.model = base(AveragePooling2D(pool_size = 2))
+        super().sett( base(layers.AveragePooling2D(pool_size = 2)) )
 
-class max1d:
-    def __init__(self, n):
-        self.x, self.y = dummy(1,n)
+class max1d(Dim1):
+    def __init__(self, numf):
+        super().__init__(numf)
         
     def create(self):
         print('\n\nThis is tflow-max1d \n\n')
-        self.model = base( MaxPool1D(pool_size = 2) )
+        super().sett( base( layers.MaxPool1D(pool_size = 2) ) )
     
-class max2d:
-    def __init__(self, n):
-        self.x, self.y = dummy(2,n)
+class max2d(Dim2):
+    def __init__(self, numf):
+        super().__init__(numf)
         
     def create(self):
         print('\n\nThis is tflow-max2d \n\n')
-        self.model = base( MaxPool2D(pool_size = 2) )
+        super().sett( base( layers.MaxPool2D(pool_size = 2) ) )
 
-class dense:
-    def __init__(self, n):
-        self.x, self.y = dummy(1,n)
+class dense(Dim2):
+    def __init__(self, numf):
+        super().__init__(numf)
     
     def create(self):
         print('\n\nThis is tflow-dense \n\n')
         model = Sequential()
-        model.add( Dense(units = 10) )
-        model.compile(loss=loss, optimizer=opt, metrics=[metric])
-        self.model = model
+        model.add( Flatten() )
+        model.add(
+            layers.Dense( units = 10 )
+        )
+        super().sett(model)
 
 mapp = {
     'avg1d': avg1d,

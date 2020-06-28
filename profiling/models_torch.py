@@ -9,29 +9,6 @@ criterion = nn.CrossEntropyLoss
 optimizer = torch.optim.SGD
 learning_rate = 0.01
 
-# def dataset(dim):
-#     if(dim == 2):
-#         trans = torchvision.transforms.Compose([
-#             transforms.Resize(32),
-#             transforms.ToTensor(),
-#             transforms.Normalize((0.1307,), (0.3081,))
-#         ])
-#     else:# dim == 1
-#         trans = torchvision.transforms.Compose([
-#             transforms.Resize(32),
-#             transforms.ToTensor(),
-#             transforms.Normalize((0.1307,), (0.3081,)),
-#             transforms.Lambda(lambda x: x.view(1,-1))
-#         ])
-        
-#     train_dataset = torchvision.datasets.MNIST(
-#         root='./mnist_torch',
-#         train=True, 
-#         transform=trans, 
-#         download=True
-#     )
-#     return train_dataset
-
 def dummy(dim, n):
     ds_size = 5000
     out_size = 10
@@ -50,21 +27,47 @@ def dummy(dim, n):
     train_data = torch.utils.data.TensorDataset(x, y)
     
     return train_data
-
+   
 def conv_size_out(size_in, kern, stride):
     pad = 0
-    size_out = (size_in + 2*pad - (kern - 1) - 1)/stride +1
-    return size_out
+    dilation = 1
+    return (size_in + 2*pad - dilation*(kern - 1) - 1) // stride + 1
 
 def avg_size_out(size_in, kern, stride):
     pad = 0
-    size_out = (size_in + 2*pad - kern)/stride +1
-    return size_out
+    return (size_in + 2*pad - kern) // stride + 1
 
-class conv1d:
+def max_size_out(size_in, kern, stride):
+    pad = 0
+    dilation = 1
+    return (size_in + 2*pad - dilation*(kern - 1) - 1) // stride + 1
+    
+class Test:
+    def sett(self, model):
+        learning_rate = 0.01
+        self.criterion = nn.CrossEntropyLoss()
+        self.optimizer = torch.optim.SGD(model.parameters(), lr = learning_rate)
+        self.model = model
+        
+class Dim1(Test):
     def __init__(self, numf):
         self.train_dataset = dummy(1,numf)
         self.numf = numf
+        
+    def sett(self, model):
+        super().sett(model)
+        
+class Dim2(Test):
+    def __init__(self, numf):
+        self.train_dataset = dummy(2,numf)
+        self.numf = numf
+        
+    def sett(self, model):
+        super().sett(model)
+
+class conv1d(Dim1):
+    def __init__(self, numf):
+        super().__init__(numf)
     
     def create(self):
         print('\n\nThis is torch-conv1d \n\n')
@@ -74,8 +77,7 @@ class conv1d:
         kern = 5
         stride = 1
 
-        conv_out = conv_size_out(numf, kern, stride)
-        lin_in = out_channels * ( int(conv_out) )    
+        lin_in = out_channels * ( conv_size_out(numf, kern, stride) )    
 
         model = nn.Sequential(
               nn.Conv1d(
@@ -87,15 +89,13 @@ class conv1d:
                 in_features = lin_in,
                 out_features = 10
             )
-        )        
-        self.criterion = criterion()
-        self.optimizer = optimizer(model.parameters(), lr = learning_rate)
-        self.model = model
+        )
+        
+        super().sett(model)
 
-class conv2d:
+class conv2d(Dim2):
     def __init__(self, numf):
-        self.train_dataset = dummy(2,numf)
-        self.numf = numf
+        super().__init__(numf)
 
     def create(self):
         print('This is torch-conv2d \n')
@@ -105,8 +105,7 @@ class conv2d:
         kern = 5
         stride = 1
 
-        conv_out = conv_size_out(numf, kern, stride)
-        lin_in = out_channels * ( int(conv_out) ** 2 )    
+        lin_in = out_channels * ( conv_size_out(numf, kern, stride) ** 2 )    
 
         model = nn.Sequential(
               nn.Conv2d(
@@ -119,16 +118,127 @@ class conv2d:
                 out_features = 10
             )
         )
-        self.criterion = criterion()
-        self.optimizer = optimizer(model.parameters(), lr = learning_rate)        
-        self.model = model
+        
+        super().sett(model)
+        
+class avg1d(Dim1):
+    def __init__(self, numf):
+        super().__init__(numf)
+
+    def create(self):
+        print('This is torch-avg1d \n')
+        numf = self.numf
+        kern = 5
+        stride = 1
+        
+        lin_in = avg_size_out(numf, kern, stride)
+        
+        model = nn.Sequential(
+            nn.AvgPool1d( kernel_size = kern, stride = stride ),
+            nn.Flatten(),
+            nn.Linear(
+                in_features = lin_in,
+                out_features = 10
+            )
+        )
+        
+        super().sett(model)
+
+class avg2d(Dim2):
+    def __init__(self, numf):
+        super().__init__(numf)
+
+    def create(self):
+        print('This is torch-avg2d \n')
+        numf = self.numf
+        kern = 5
+        stride = 1
+        
+        lin_in = avg_size_out(numf, kern, stride) ** 2
+        
+        model = nn.Sequential(
+            nn.AvgPool2d( kernel_size = kern, stride = stride ),
+            nn.Flatten(),
+            nn.Linear(
+                in_features = lin_in,
+                out_features = 10
+            )
+        )
+        
+        super().sett(model)
+        
+class dense(Dim2):
+    def __init__(self, numf):
+        super().__init__(numf)
+
+    def create(self):
+        print('This is torch-linear \n')
+        numf = self.numf
+        
+        lin_in = numf ** 2
+        
+        model = nn.Sequential(
+            nn.Flatten(),
+            nn.Linear(
+                in_features = lin_in,
+                out_features = 10
+            )
+        )
+        
+        super().sett(model)
+
+class max1d(Dim1):
+    def __init__(self, numf):
+        super().__init__(numf)
+    
+    def create(self):
+        print('This is torch-max1d \n')
+        numf = self.numf
+        kern = 5
+        stride = 1
+
+        lin_in = max_size_out(numf, kern, stride)
+        
+        model = nn.Sequential(
+            nn.MaxPool1d( kernel_size = kern, stride = stride ),
+            nn.Flatten(),
+            nn.Linear(
+                in_features = lin_in,
+                out_features = 10
+            )
+        )
+        
+        super().sett(model) 
+
+class max2d(Dim2):
+    def __init__(self, numf):
+        super().__init__(numf)
+
+    def create(self):
+        print('This is torch-max2d \n')
+        numf = self.numf
+        kern = 5
+        stride = 1
+        
+        lin_in = max_size_out(numf, kern, stride) ** 2
+        
+        model = nn.Sequential(
+            nn.MaxPool2d( kernel_size = kern, stride = stride ),
+            nn.Flatten(),
+            nn.Linear(
+                in_features = lin_in,
+                out_features = 10
+            )
+        )
+        
+        super().sett(model)         
         
 mapp = {
-#     'avg1d': avg1d,
-#     'avg2d': avg2d,
+    'avg1d': avg1d,
+    'avg2d': avg2d,
     'conv1d': conv1d,
     'conv2d': conv2d,
-#     'max1d': max1d,
-#     'max2d': max2d,
-#     'dense': dense
+    'max1d': max1d,
+    'max2d': max2d,
+    'dense': dense
 }

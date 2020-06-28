@@ -3,3 +3,5 @@
 profiling/.ipynb_checkpoints/
 profiling/__pycache__/
 profiling/*.ipynb
+profiling/*.pkl
+profiling/*.csv

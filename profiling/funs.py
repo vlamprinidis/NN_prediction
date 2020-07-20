@@ -11,10 +11,11 @@ ranks = {
 }
 rank = ranks[host]
 
-def my_key(model_str, numf, batch, nodes, it):
+def my_key(model_str, numf, hp, batch, nodes, it):
     key = frozenset({
         ('model_str', model_str),
         ('numf', numf),
+        ('hp', hp),
         ('batch', batch),
         ('nodes', nodes),
         ('it', it)
@@ -36,11 +37,14 @@ def _save(data, fname):
     with open(fname, 'wb') as fp:
         pickle.dump(data, fp)
     fp.close()
-    
+
+# Creates the file if it doesn't already exist
 def load(fname):
     if( not os.path.exists(fname) ):
         print( 'No such file: {}'.format(fname) )
-        return None
+        print( 'Creating empty file: {}'.format(fname) )
+        _save({}, fname)
+        return {}
 
     with open(fname, 'rb') as fp:
         data = pickle.load(fp)
@@ -48,23 +52,19 @@ def load(fname):
         
     return data
 
-# Creates the file if it doesn't already exist
 def update(key, value, fname):
-    if( not os.path.exists(fname) ):
-        _save({}, fname)
-
     data = load(fname)
     data[key] = value
     _save(data, fname)
+    print('\nAdded: {}\n'.format(key))
 
 def get_keys(fname):
     data = load(fname)
-    
     return list(data.keys())
     
-def get_value(model_str, numf, batch, nodes, it, fname):
+def get_value(model_str, numf, hp, batch, nodes, it, fname):
     data = load(fname)
-    key = my_key(model_str, numf, batch, nodes, it)
+    key = my_key(model_str, numf, hp, batch, nodes, it)
     
     value = data.get(key)
     if value == None:
@@ -72,7 +72,7 @@ def get_value(model_str, numf, batch, nodes, it, fname):
         
     return value
 
-numf_ls = [16, 32, 64, 128, 256]
+numf_ls = [16, 32, 64, 128]
 batch_ls = [32, 64, 128, 256, 512]
 nodes_ls = [1,2,3]
 
@@ -85,13 +85,15 @@ def parse(model_ls):
                            choices = model_ls)
     my_parser.add_argument('-numf', '--num_features', type=int, required=True,
                           choices = numf_ls )
+    
+    my_parser.add_argument('-hp', '--hyper_param', type=int, required=True )
+    
     my_parser.add_argument('-b', '--batch', type=int, required=True, 
                            choices = batch_ls )
     my_parser.add_argument('-n', '--nodes', type=int, required=True,
                           choices = nodes_ls )
     my_parser.add_argument('-it', '--iteration', type=int, default=1)
     my_parser.add_argument('-e', '--epochs', type=int, default=5)
-    my_parser.add_argument('-use_prof', '--use_profiler', type=bool, default=True)
     
     args = my_parser.parse_args()
     

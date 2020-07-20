@@ -25,7 +25,7 @@ def get_ops(source):
     
     return df
 
-def distribute(model_class, nodes):
+def prepare(model_class, nodes):
     rank = h.rank
     if nodes > 1:
         workers = []
@@ -46,23 +46,24 @@ def distribute(model_class, nodes):
     else:
         model_class.create()
 
-def profile(model_class, batch, epochs, use_prof):
+def profile(model_class, batch, epochs):
     model, x, y = model_class.model, model_class.x, model_class.y
-    if use_prof:
-        prof_file = './out_tflow.csv'
-        
-        logdir = '/home/ubuntu/logs_tflow'
-        os.system('rm -rf {}'.format(logdir))
+    prof_file = './out_tflow.csv'
 
-        with tf.profiler.experimental.Profile(logdir):
-            model.fit(x, y, batch_size = batch, epochs = epochs)
-            pass
+    logdir = '/home/ubuntu/logs_tflow'
+    os.system('rm -rf {}'.format(logdir))
 
-        _save(logdir, prof_file)
-        
-        return prof_file
-
-    else:
+    with tf.profiler.experimental.Profile(logdir):
         model.fit(x, y, batch_size = batch, epochs = epochs)
-        
-        return None
+        pass
+
+    _save(logdir, prof_file)
+
+    return prof_file
+
+
+### this is for creating the graph
+#         tb_callback = tf.keras.callbacks.TensorBoard(log_dir=logdir,
+#                                              profile_batch=3)
+
+#         model.fit(x, y, batch_size = batch, steps_per_epoch=3, epochs = 1, callbacks=[tb_callback])

@@ -84,7 +84,7 @@ def prepare(model_class, batch, nodes):
 
     model_class.train_loader = train_loader
 
-def profile(model_class, epochs, use_prof):
+def profile(model_class, epochs):
     model = model_class.model
     train_loader = model_class.train_loader
     criterion = model_class.criterion
@@ -109,17 +109,11 @@ def profile(model_class, epochs, use_prof):
                     print ('Epoch [{}/{}], Step [{}/{}], Loss: {}' 
                            .format(epoch+1, epochs, i+1, total_step, loss))
     
-    if use_prof:
-        prof_file = './out_torch.csv'
-        with torch.autograd.profiler.profile() as prof:
-            train()
-            
-        # save results
-        _save(prof.key_averages(), prof_file)
-        
-        return prof_file
-        
-    else:
+    prof_file = './out_torch.csv'
+    with torch.autograd.profiler.profile() as prof:
         train()
-        
-        return None
+
+    # save results
+    _save(prof.key_averages(), prof_file)
+
+    return prof_file

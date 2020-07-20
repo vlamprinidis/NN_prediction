@@ -28,8 +28,8 @@ def dummy(dim, n):
 def base(layer):    
     model = Sequential()
     model.add( layer )
-    model.add( Flatten() )
-    model.add( Dense(units = 10) )
+    model.add( Flatten(name='FLATTEN') )
+    model.add( Dense(units = 10, name='FINAL_DENSE', activation = 'softmax') )
     
     return model
 
@@ -45,81 +45,94 @@ class Test:
         self.model = model
         
 class Dim1(Test):
-    def __init__(self, numf):
+    def __init__(self, numf, hp):
         self.numf = numf
+        self.hp = hp
         self.x, self.y = dummy(1,numf)
 
     def sett(self, model):
         super().sett(model)
 
 class Dim2(Test):
-    def __init__(self, numf):
+    def __init__(self, numf, hp):
         self.numf = numf
+        self.hp = hp
         self.x, self.y = dummy(2,numf)
 
     def sett(self, model):
         super().sett(model)
 
 class conv1d(Dim1):
-    def __init__(self, numf):
-        super().__init__(numf)
+    def __init__(self, numf, hp):
+        super().__init__(numf, hp)
     
     def create(self):
         print('\n\nThis is tflow-conv1d \n\n')
-        super().sett( base(layers.Conv1D(filters = 6, kernel_size = 5)) )
+        super().sett( base(layers.Conv1D(filters = 1, kernel_size = self.hp, name = 'CONV1D', activation = 'relu')) )
 
 class conv2d(Dim2):
-    def __init__(self, numf):
-        super().__init__(numf)
+    def __init__(self, numf, hp):
+        super().__init__(numf, hp)
         
     def create(self):
         print('\n\nThis is tflow-conv2d \n\n')
-        super().sett( base(layers.Conv2D(filters = 6, kernel_size = 5)) )
+        super().sett( base(layers.Conv2D(filters = 1, kernel_size = self.hp, name = 'CONV2D', activation = 'relu')) )
 
 class avg1d(Dim1):
-    def __init__(self, numf):
-        super().__init__(numf)
+    def __init__(self, numf, hp):
+        super().__init__(numf, hp)
     
     def create(self):
         print('\n\nThis is tflow-avg1d \n\n')
-        super().sett( base(layers.AveragePooling1D(pool_size = 2)) )
+        super().sett( base(layers.AveragePooling1D(pool_size = self.hp, name = 'AVG1D')) )
     
 class avg2d(Dim2):
-    def __init__(self, numf):
-        super().__init__(numf)
+    def __init__(self, numf, hp):
+        super().__init__(numf, hp)
         
     def create(self):
         print('\n\nThis is tflow-avg2d \n\n')
-        super().sett( base(layers.AveragePooling2D(pool_size = 2)) )
+        super().sett( base(layers.AveragePooling2D(pool_size = self.hp, name='AVG2D')) )
 
 class max1d(Dim1):
-    def __init__(self, numf):
-        super().__init__(numf)
+    def __init__(self, numf, hp):
+        super().__init__(numf, hp)
         
     def create(self):
         print('\n\nThis is tflow-max1d \n\n')
-        super().sett( base( layers.MaxPool1D(pool_size = 2) ) )
+        super().sett( base(layers.MaxPool1D(pool_size = self.hp, name = 'MAX1D')) )
     
 class max2d(Dim2):
-    def __init__(self, numf):
-        super().__init__(numf)
+    def __init__(self, numf, hp):
+        super().__init__(numf, hp)
         
     def create(self):
         print('\n\nThis is tflow-max2d \n\n')
-        super().sett( base( layers.MaxPool2D(pool_size = 2) ) )
+        super().sett( base(layers.MaxPool2D(pool_size = self.hp, name = 'MAX2D')) )
 
 class dense(Dim2):
-    def __init__(self, numf):
-        super().__init__(numf)
+    def __init__(self, numf, hp):
+        super().__init__(numf, hp)
     
     def create(self):
         print('\n\nThis is tflow-dense \n\n')
-        model = Sequential()
-        model.add( Flatten() )
-        model.add(
-            layers.Dense( units = 10 )
-        )
-        super().sett(model)
+        super().sett( base(layers.Dense(units = self.hp, name = 'DENSE', activation = 'relu')) )
+
+class norm1d(Dim1):
+    def __init__(self, numf, hp):
+        super().__init__(numf, hp)
+    
+    def create(self):
+        print('\n\nThis is tflow-norm1d \n\n')
+        super().sett( base(layers.BatchNormalization(name = 'NORM1D')) )
+
+class norm2d(Dim2):
+    def __init__(self, numf, hp):
+        super().__init__(numf, hp)
+    
+    def create(self):
+        print('\n\nThis is tflow-norm2d \n\n')
+        super().sett( base(layers.BatchNormalization(name = 'NORM2D')) )
 
 mapp = {
     'avg1d': avg1d,
@@ -128,7 +141,9 @@ mapp = {
     'conv2d': conv2d,
     'max1d': max1d,
     'max2d': max2d,
-    'dense': dense
+    'dense': dense,
+    'norm1d':norm1d,
+    'norm2d': norm2d
 }
 
 model_ls = mapp.keys()

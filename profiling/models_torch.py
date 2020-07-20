@@ -51,9 +51,10 @@ def base(layer, lin_in):
     return model
     
 class Test:
-    def __init__(self, numf, dim):
+    def __init__(self, numf, hp, dim):
         self.train_dataset = dummy(dim, numf)
         self.numf = numf
+        self.hp = hp
         
     def sett(self, model):
         learning_rate = 0.01
@@ -62,28 +63,28 @@ class Test:
         self.model = model
         
 class Dim1(Test):
-    def __init__(self, numf):
-        super().__init__(numf, 1)
+    def __init__(self, numf, hp):
+        super().__init__(numf, hp, 1)
         
     def sett(self, model):
         super().sett(model)
         
 class Dim2(Test):
-    def __init__(self, numf):
-        super().__init__(numf, 2)
+    def __init__(self, numf, hp):
+        super().__init__(numf, hp, 2)
         
     def sett(self, model):
         super().sett(model)
 
 class conv1d(Dim1):
-    def __init__(self, numf):
-        super().__init__(numf)
+    def __init__(self, numf, hp):
+        super().__init__(numf, hp)
     
     def create(self):
         print('\n\nThis is torch-conv1d \n\n')
         numf = self.numf
         out_channels = 6
-        kern = 5
+        kern = self.hp
         stride = 1
         lin_in = out_channels * ( conv_size_out(numf, kern, stride) )
         
@@ -91,14 +92,14 @@ class conv1d(Dim1):
         super().sett(model)
 
 class conv2d(Dim2):
-    def __init__(self, numf):
-        super().__init__(numf)
+    def __init__(self, numf, hp):
+        super().__init__(numf, hp)
 
     def create(self):
         print('This is torch-conv2d \n')
         numf = self.numf
         out_channels = 6
-        kern = 5
+        kern = self.hp
         stride = 1
         lin_in = out_channels * ( conv_size_out(numf, kern, stride) ** 2 )    
 
@@ -106,13 +107,13 @@ class conv2d(Dim2):
         super().sett(model)
         
 class avg1d(Dim1):
-    def __init__(self, numf):
-        super().__init__(numf)
+    def __init__(self, numf, hp):
+        super().__init__(numf, hp)
 
     def create(self):
         print('This is torch-avg1d \n')
         numf = self.numf
-        kern = 5
+        kern = self.hp
         stride = 1
         lin_in = avg_size_out(numf, kern, stride)
         
@@ -120,13 +121,13 @@ class avg1d(Dim1):
         super().sett(model)
 
 class avg2d(Dim2):
-    def __init__(self, numf):
-        super().__init__(numf)
+    def __init__(self, numf, hp):
+        super().__init__(numf, hp)
 
     def create(self):
         print('This is torch-avg2d \n')
         numf = self.numf
-        kern = 5
+        kern = self.hp
         stride = 1
         lin_in = avg_size_out(numf, kern, stride) ** 2
         
@@ -134,18 +135,19 @@ class avg2d(Dim2):
         super().sett(model)
         
 class dense(Dim2):
-    def __init__(self, numf):
-        super().__init__(numf)
+    def __init__(self, numf, hp):
+        super().__init__(numf, hp)
 
     def create(self):
         print('This is torch-linear \n')
         numf = self.numf
-        lin_in = numf ** 2
         
         model = nn.Sequential(
             nn.Flatten(),
+            nn.Linear(in_features = numf ** 2, out_features = self.hp),
+            nn.Flatten(),
             nn.Linear(
-                in_features = lin_in,
+                in_features = self.hp,
                 out_features = 10
             )
         )
@@ -153,13 +155,13 @@ class dense(Dim2):
         super().sett(model)
 
 class max1d(Dim1):
-    def __init__(self, numf):
-        super().__init__(numf)
+    def __init__(self, numf, hp):
+        super().__init__(numf, hp)
     
     def create(self):
         print('This is torch-max1d \n')
         numf = self.numf
-        kern = 5
+        kern = self.hp
         stride = 1
         lin_in = max_size_out(numf, kern, stride)
         
@@ -167,19 +169,41 @@ class max1d(Dim1):
         super().sett(model) 
 
 class max2d(Dim2):
-    def __init__(self, numf):
-        super().__init__(numf)
+    def __init__(self, numf, hp):
+        super().__init__(numf, hp)
 
     def create(self):
         print('This is torch-max2d \n')
         numf = self.numf
-        kern = 5
+        kern = self.hp
         stride = 1
         lin_in = max_size_out(numf, kern, stride) ** 2
         
         model = base( nn.MaxPool2d( kernel_size = kern, stride = stride ), lin_in)
         super().sett(model)         
+    
+class norm1d(Dim1):
+    def __init__(self, numf, hp):
+        super().__init__(numf, hp)
+
+    def create(self):
+        print('This is torch-norm1d \n')
+        numf = self.numf
         
+        model = base( nn.BatchNorm1d(1), numf )
+        super().sett(model)
+        
+class norm2d(Dim2):
+    def __init__(self, numf, hp):
+        super().__init__(numf, hp)
+
+    def create(self):
+        print('This is torch-norm2d \n')
+        numf = self.numf
+        
+        model = base( nn.BatchNorm2d(1), numf**2 )
+        super().sett(model)
+    
 mapp = {
     'avg1d': avg1d,
     'avg2d': avg2d,
@@ -187,7 +211,9 @@ mapp = {
     'conv2d': conv2d,
     'max1d': max1d,
     'max2d': max2d,
-    'dense': dense
+    'dense': dense,
+    'norm1d': norm1d,
+    'norm2d': norm2d
 }
 
 model_ls = mapp.keys()

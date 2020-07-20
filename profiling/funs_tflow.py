@@ -53,20 +53,23 @@ def prepare(model_class, nodes):
 
 def profile(model_class, batch, epochs):
     model, x, y = model_class.model, model_class.x, model_class.y
-    prof_file = 'results/out_tflow.csv'
-
-    logdir = '/home/ubuntu/logs_tflow'
-    os.system('rm -rf {}'.format(logdir))
-
-    with tf.profiler.experimental.Profile(logdir):
-        model.fit(x, y, batch_size = batch, epochs = epochs)
-        pass
-
+    
     if h.rank == 0:
+        prof_file = 'results/out_tflow.csv'
+        logdir = '/home/ubuntu/logs_tflow'
+        os.system('rm -rf {}'.format(logdir))
+
+        with tf.profiler.experimental.Profile(logdir):
+            model.fit(x, y, batch_size = batch, epochs = epochs)
+            pass
+        
         _save(logdir, prof_file)
+        
         return prof_file
     
     else:
+        model.fit(x, y, batch_size = batch, epochs = epochs)
+        
         return None
 
 

@@ -20,7 +20,13 @@ def _save(logdir, target):
 
 def get_ops(source):
     df = pd.read_csv(source, index_col=0)
-    df = df[['Type', 'Operation', '#Occurrences', 'Avg. self-time (us)']]
+    df = df[['Type', 'Operation', '#Occurrences', 
+             'Avg. self-time (us)',
+             'Total self-time (us)',
+             'Total self-time on Host (%)',
+             'Avg. time (us)', 
+             'Total time (us)'
+            ]]
     df = df.sort_values(by = ['Type', 'Operation']).reset_index(drop=True)
     
     return df

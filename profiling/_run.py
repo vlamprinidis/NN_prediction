@@ -63,29 +63,9 @@ model_ls = [('avg1d',[1,2,3]),
             ('norm1d',[0]),
             ('norm2d',[0])]
 
-# for it in [1,2,3,4]:
-#     for framework in ['tflow', 'torch']:
-#         for nodes in [1,2,3]:
-#             for model,hps in model_ls:
-#                 for hp in hps:
-#                     execute(framework, model, hp, nodes, it)
-
-for fr in ['tflow', 'torch']:
-    for model,hp in [
-#             ('avg2d',2),
-#             ('conv1d',3),
-#             ('conv2d',5),
-#             ('max1d',2),
-#             ('max2d',3),
-#             ('dense',10),
-#             ('norm1d',0),
-            ('norm2d',0)]:
-        cmd = CMD.format(   file = 'run_{}.py'.format(fr),
-                            model = model,
-                            numf = 32,
-                            hp = hp,
-                            batch = 32,
-                            nodes = 3
-                        )
-                # run commands
-        go(cmd, 3)
+for it in [1,2,3,4]:
+    for framework in ['tflow', 'torch']:
+        for nodes in [1,2,3]:
+            for model,hps in model_ls:
+                for hp in hps:
+                    execute(framework, model, hp, nodes, it)

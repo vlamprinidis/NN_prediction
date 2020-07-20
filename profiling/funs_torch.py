@@ -109,7 +109,7 @@ def profile(model_class, epochs):
                     print ('Epoch [{}/{}], Step [{}/{}], Loss: {}' 
                            .format(epoch+1, epochs, i+1, total_step, loss))
     
-    prof_file = './out_torch.csv'
+    prof_file = 'results/out_torch.csv'
     with torch.autograd.profiler.profile() as prof:
         train()
 

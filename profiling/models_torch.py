@@ -83,7 +83,7 @@ class conv1d(Dim1):
     def create(self):
         print('\n\nThis is torch-conv1d \n\n')
         numf = self.numf
-        out_channels = 6
+        out_channels = 1
         kern = self.hp
         stride = 1
         lin_in = out_channels * ( conv_size_out(numf, kern, stride) )
@@ -98,7 +98,7 @@ class conv2d(Dim2):
     def create(self):
         print('This is torch-conv2d \n')
         numf = self.numf
-        out_channels = 6
+        out_channels = 1
         kern = self.hp
         stride = 1
         lin_in = out_channels * ( conv_size_out(numf, kern, stride) ** 2 )    

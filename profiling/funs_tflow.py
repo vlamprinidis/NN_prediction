@@ -32,7 +32,6 @@ def get_ops(source):
     return df
 
 def prepare(model_class, nodes):
-    rank = h.rank
     if nodes > 1:
         workers = []
         if nodes == 2:
@@ -44,7 +43,7 @@ def prepare(model_class, nodes):
             'cluster': {
                 'worker': workers
             },
-            'task': {'type': 'worker', 'index': rank}
+            'task': {'type': 'worker', 'index': h.rank}
         })
         strategy = tf.distribute.experimental.MultiWorkerMirroredStrategy()
         with strategy.scope():
@@ -54,7 +53,7 @@ def prepare(model_class, nodes):
 
 def profile(model_class, batch, epochs):
     model, x, y = model_class.model, model_class.x, model_class.y
-    prof_file = './out_tflow.csv'
+    prof_file = 'results/out_tflow.csv'
 
     logdir = '/home/ubuntu/logs_tflow'
     os.system('rm -rf {}'.format(logdir))
@@ -63,9 +62,12 @@ def profile(model_class, batch, epochs):
         model.fit(x, y, batch_size = batch, epochs = epochs)
         pass
 
-    _save(logdir, prof_file)
-
-    return prof_file
+    if h.rank == 0:
+        _save(logdir, prof_file)
+        return prof_file
+    
+    else:
+        return None
 
 
 ### this is for creating the graph

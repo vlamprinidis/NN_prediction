@@ -29,7 +29,7 @@ if prof != None:
     key = h.my_key(model_str, numf, hp, batch, nodes, it)
     value = h.my_value(df, epochs)
     
-    target = './torch.pkl'
+    target = 'results/torch.pkl'
     h.update(key, value, target)
 
 print('\n\n')

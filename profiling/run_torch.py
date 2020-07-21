@@ -7,7 +7,7 @@ import models_torch as m
 import funs_torch as f
 import funs as h
 
-args = h.parse( list( m.mapp.keys() ) )
+args = h.prof_parse()
 
 model_str = args.model
 numf = args.num_features

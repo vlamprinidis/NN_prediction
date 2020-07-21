@@ -215,5 +215,3 @@ mapp = {
     'norm1d': norm1d,
     'norm2d': norm2d
 }
-
-model_ls = mapp.keys()

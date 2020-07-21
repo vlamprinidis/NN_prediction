@@ -76,13 +76,25 @@ numf_ls = [16, 32, 64, 128]
 batch_ls = [32, 64, 128, 256, 512]
 nodes_ls = [1,2,3]
 
-def parse(model_ls):
+hp_map = {
+    'avg1d': [1,2,3],
+    'avg2d': [1,2,3],
+    'conv1d': [1,3,5,7,11],
+    'conv2d': [1,3,5,7,11],
+    'max1d': [1,2,3],
+    'max2d': [1,2,3],
+    'dense': [10,84,120,1000,4096],
+    'norm1d':[0],
+    'norm2d': [0]
+}
+
+def prof_parse():
     print('\n')
     print('This is ' + host)
 
     my_parser = argparse.ArgumentParser()
     my_parser.add_argument('-m', '--model', type=str, required=True, 
-                           choices = model_ls)
+                           choices = list(hp_map.keys()))
     my_parser.add_argument('-numf', '--num_features', type=int, required=True,
                           choices = numf_ls )
     
@@ -102,3 +114,4 @@ def parse(model_ls):
     print('\n')
     
     return args
+

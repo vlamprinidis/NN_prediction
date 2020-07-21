@@ -9,7 +9,7 @@ import models_tflow as m
 import funs_tflow as f
 import funs as h
 
-args = h.parse( list( m.mapp.keys() ) )
+args = h.prof_parse()
 
 model_str = args.model
 numf = args.num_features

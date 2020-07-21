@@ -1,8 +1,8 @@
 import subprocess as sub
-from funs import numf_ls, batch_ls, nodes_ls, get_keys
+from funs import numf_ls, batch_ls, nodes_ls, get_keys, hp_map
 
-iters=4
-hps=5*2+3*2+3*2+5+1+1
+iters=1
+hps = sum([ len(hp_map[key]) for key in hp_map ])
 
 curr_tflow = len(get_keys('results/tflow.pkl'))
 total_tflow = len(numf_ls)*len(batch_ls)*len(nodes_ls)*iters*hps

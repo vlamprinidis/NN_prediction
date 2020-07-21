@@ -105,7 +105,7 @@ def profile(model_class, epochs):
                 loss.backward()
                 optimizer.step()
 
-                if (i+1) % 10 == 0:
+                if (i+1) % 50 == 0:
                     print ('Epoch [{}/{}], Step [{}/{}], Loss: {}' 
                            .format(epoch+1, epochs, i+1, total_step, loss))
     

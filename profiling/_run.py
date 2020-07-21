@@ -1,4 +1,6 @@
 import subprocess as sub
+import os
+import signal
 from funs import numf_ls, batch_ls, get_value, hp_map
 
 CMD = '/home/ubuntu/.night/bin/python3 /home/ubuntu/diploma/profiling/{file} -m {model} -numf {numf} -hp {hp} -b {batch} -n {nodes} -it {it} -e 5'
@@ -7,32 +9,63 @@ def go(cmd, nodes):
     print('RUNNING CMD:')
     print(cmd)
     
-    p1 = sub.Popen(cmd, shell=True, stdout=sub.PIPE)
+    p1 = sub.Popen(cmd, shell=True)
     print('RAN ON FIRST NODE')
     
     if nodes >= 2:
-        p2 = sub.Popen('ssh vm2 "{}"'.format(cmd), shell=True, stdout=sub.PIPE)
+        p2 = sub.Popen('ssh vm2 "{}"'.format(cmd), shell=True)
         print('RAN ON SECOND NODE')
         
     if nodes == 3:
-        p3 = sub.Popen('ssh vm3 "{}"'.format(cmd), shell=True, stdout=sub.PIPE)
+        p3 = sub.Popen('ssh vm3 "{}"'.format(cmd), shell=True)
         print('RAN ON THIRD NODE')
 
-    res1 = p1.communicate()[0]
-    print(res1.decode())
+    fail = False
+    
+    def kill(p):
+        os.killpg(p.pid, signal.SIGINT) # send signal to the process group
+        out = p.communicate()[0]     
+        
+    def comm(p):
+        try:
+            out = p.communicate(timeout=1)[0]
+        except sub.TimeoutExpired:
+            fail = True
+            kill(p)
+            print('Timeout')
+        
+    def tofail(p):
+        if (not fail) and p.returncode != 0: 
+            fail = True
+            print('Command failed')
+            
+    comm(p1)
+    tofail(p1)
+    
     print('FIRST NODE END')
     
     if nodes >= 2:
-        res2 = p2.communicate()[0]
-        print(res2.decode())
-        print('SECOND NODE END')
-    
+        if fail:
+            kill(p2)
+            print('killed p2')
+            
+        else:
+            comm(p2)
+            tofail(p2)
+            
+            print('SECOND NODE END')
+            
     if nodes == 3:
-        res3 = p3.communicate()[0]
-        print(res3.decode())
-        print('THIRD NODE END')
-                       
-                        
+        if fail:
+            kill(p3)
+            print('killed p3')
+            
+        else:
+            comm(p3)
+            tofail(p3)
+            
+            print('THIRD NODE END')
+
 def execute(framework, model, hp, nodes, it):
     for numf in numf_ls:
         for batch in batch_ls:
@@ -53,10 +86,13 @@ def execute(framework, model, hp, nodes, it):
 #                 if nodes > 1:
 #                     # kill 8890 ports just in case
 #                     go('fuser -k 8890/tcp', nodes)
+            else:
+                print('Combination exists: {} numf{} hp{} batch{} nodes{} it{} fw{}'.format(
+                    model,numf,hp,batch,nodes,it,framework
+                ))
 
-for it in [1]:
-    for framework in ['tflow', 'torch']:
-        for nodes in [1,2,3]:
-            for key in hp_map:
-                for hp in hp_map[key]:
-                    execute(framework, model, hp, nodes, it)
+for nodes in [3,2,1]:
+    for framework in ['tflow']:
+        for model in list(hp_map):
+            for hp in hp_map[model]:
+                execute(framework, model, hp, nodes, it)

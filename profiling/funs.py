@@ -11,14 +11,13 @@ ranks = {
 }
 rank = ranks[host]
 
-def my_key(model_str, numf, hp, batch, nodes, it):
+def my_key(model_str, numf, hp, batch, nodes):
     key = frozenset({
         ('model_str', model_str),
         ('numf', numf),
         ('hp', hp),
         ('batch', batch),
-        ('nodes', nodes),
-        ('it', it)
+        ('nodes', nodes)
     })
     
     return key
@@ -77,13 +76,13 @@ batch_ls = [32, 64, 128, 256, 512]
 nodes_ls = [1,2,3]
 
 hp_map = {
-    'avg1d': [1,2,3],
-    'avg2d': [1,2,3],
-    'conv1d': [1,3,5,7,11],
-    'conv2d': [1,3,5,7,11],
-    'max1d': [1,2,3],
-    'max2d': [1,2,3],
-    'dense': [10,84,120,1000,4096],
+    'avg1d': [2,4],
+    'avg2d': [2,4],
+    'conv1d': [2,4,8],
+    'conv2d': [2,4,8],
+    'max1d': [2,4],
+    'max2d': [2,4],
+    'dense': [32,64,128],
     'norm1d':[0],
     'norm2d': [0]
 }
@@ -104,7 +103,6 @@ def prof_parse():
                            choices = batch_ls )
     my_parser.add_argument('-n', '--nodes', type=int, required=True,
                           choices = nodes_ls )
-    my_parser.add_argument('-it', '--iteration', type=int, default=1)
     my_parser.add_argument('-e', '--epochs', type=int, default=5)
     
     args = my_parser.parse_args()

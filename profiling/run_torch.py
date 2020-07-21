@@ -14,7 +14,6 @@ numf = args.num_features
 hp = args.hyper_param
 batch = args.batch
 nodes = args.nodes
-it = args.iteration
 epochs = args.epochs
 
 model_class = m.mapp[model_str](numf, hp)
@@ -26,7 +25,7 @@ prof = f.profile(model_class, epochs)
 if prof != None:
     df = f.get_ops(prof)
     
-    key = h.my_key(model_str, numf, hp, batch, nodes, it)
+    key = h.my_key(model_str, numf, hp, batch, nodes)
     value = h.my_value(df, epochs)
     
     target = 'results/torch.pkl'

@@ -29,7 +29,7 @@ def base(layer):
     model = Sequential()
     model.add( layer )
     model.add( Flatten(name='FLATTEN') )
-    model.add( Dense(units = 10, name='FINAL_DENSE', activation = 'softmax') )
+    model.add( Dense(units = 10, name='FINAL_DENSE') )
     
     return model
 

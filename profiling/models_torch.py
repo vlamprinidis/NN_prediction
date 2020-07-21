@@ -37,7 +37,20 @@ def max_size_out(size_in, kern, stride):
     pad = 0
     dilation = 1
     return (size_in + 2*pad - dilation*(kern - 1) - 1) // stride + 1
+   
+def base_relu(layer, lin_in):
+    model = nn.Sequential(
+        layer,
+        nn.ReLU(),
+        nn.Flatten(),
+        nn.Linear(
+            in_features = lin_in,
+            out_features = 10
+        )
+    )
     
+    return model
+
 def base(layer, lin_in):
     model = nn.Sequential(
         layer,
@@ -88,7 +101,7 @@ class conv1d(Dim1):
         stride = 1
         lin_in = out_channels * ( conv_size_out(numf, kern, stride) )
         
-        model = base( nn.Conv1d(in_channels = 1, out_channels = out_channels, kernel_size = kern, stride = stride), lin_in )
+        model = base_relu( nn.Conv1d(in_channels = 1, out_channels = out_channels, kernel_size = kern, stride = stride), lin_in )
         super().sett(model)
 
 class conv2d(Dim2):
@@ -103,7 +116,7 @@ class conv2d(Dim2):
         stride = 1
         lin_in = out_channels * ( conv_size_out(numf, kern, stride) ** 2 )    
 
-        model = base( nn.Conv2d(in_channels = 1, out_channels = out_channels, kernel_size = kern, stride = stride), lin_in)     
+        model = base_relu( nn.Conv2d(in_channels = 1, out_channels = out_channels, kernel_size = kern, stride = stride), lin_in)     
         super().sett(model)
         
 class avg1d(Dim1):
@@ -145,6 +158,7 @@ class dense(Dim2):
         model = nn.Sequential(
             nn.Flatten(),
             nn.Linear(in_features = numf ** 2, out_features = self.hp),
+            nn.ReLU(),
             nn.Flatten(),
             nn.Linear(
                 in_features = self.hp,

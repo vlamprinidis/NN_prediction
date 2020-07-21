@@ -61,9 +61,9 @@ def get_keys(fname):
     data = load(fname)
     return list(data.keys())
     
-def get_value(model_str, numf, hp, batch, nodes, it, fname):
+def get_value(model_str, numf, hp, batch, nodes, fname):
     data = load(fname)
-    key = my_key(model_str, numf, hp, batch, nodes, it)
+    key = my_key(model_str, numf, hp, batch, nodes)
     
     value = data.get(key)
     if value == None:

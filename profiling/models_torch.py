@@ -77,14 +77,14 @@ class Test:
         
 class Dim1(Test):
     def __init__(self, numf, hp):
-        super().__init__(numf, hp, 1)
+        super().__init__(numf, hp, dim = 1)
         
     def sett(self, model):
         super().sett(model)
         
 class Dim2(Test):
     def __init__(self, numf, hp):
-        super().__init__(numf, hp, 2)
+        super().__init__(numf, hp, dim = 2)
         
     def sett(self, model):
         super().sett(model)

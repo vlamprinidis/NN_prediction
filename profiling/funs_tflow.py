@@ -52,7 +52,8 @@ def prepare(model_class, nodes):
         model_class.create()
 
 def profile(model_class, batch, epochs):
-    model, x, y = model_class.model, model_class.x, model_class.y
+    model, tf_data = model_class.model, model_class.tf_data
+    tf_data = tf_data.batch(batch)
     
     if h.rank == 0:
         prof_file = 'results/out_tflow.csv'
@@ -60,7 +61,7 @@ def profile(model_class, batch, epochs):
         os.system('rm -rf {}'.format(logdir))
 
         with tf.profiler.experimental.Profile(logdir):
-            model.fit(x, y, batch_size = batch, epochs = epochs)
+            model.fit(tf_data, epochs = epochs)
             pass
         
         _save(logdir, prof_file)
@@ -68,7 +69,7 @@ def profile(model_class, batch, epochs):
         return prof_file
     
     else:
-        model.fit(x, y, batch_size = batch, epochs = epochs)
+        model.fit(tf_data, epochs = epochs)
         
         return None
 

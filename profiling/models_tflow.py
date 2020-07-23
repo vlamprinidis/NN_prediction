@@ -33,7 +33,13 @@ def base(layer):
     
     return model
 
-class Test:    
+class Test:
+    def __init__(self, numf, hp, dim):
+        self.numf = numf
+        self.hp = hp
+        x, y = dummy(dim,numf)
+        self.tf_data = tf.data.Dataset.from_tensor_slices((x, y))
+        
     def sett(self, model):
         opt = tf.keras.optimizers.SGD(learning_rate=0.01)
         loss = 'categorical_crossentropy'
@@ -46,18 +52,14 @@ class Test:
         
 class Dim1(Test):
     def __init__(self, numf, hp):
-        self.numf = numf
-        self.hp = hp
-        self.x, self.y = dummy(1,numf)
+        super().__init__(numf, hp = hp, dim = 1)
 
     def sett(self, model):
         super().sett(model)
 
 class Dim2(Test):
     def __init__(self, numf, hp):
-        self.numf = numf
-        self.hp = hp
-        self.x, self.y = dummy(2,numf)
+        super().__init__(numf, hp = hp, dim = 2)
 
     def sett(self, model):
         super().sett(model)

@@ -5,6 +5,8 @@ import os
 import wget
 import funs as h
 
+strategy = tf.distribute.experimental.MultiWorkerMirroredStrategy()
+
 # This can overwrite the file, don't use outside funs_tflow
 def _save(logdir, target):
     host = h.host
@@ -31,8 +33,7 @@ def get_ops(source):
     
     return df
 
-def prepare(model_class, batch, nodes):
-    model_class.tf_data = model_class.tf_data.batch(batch)
+def prepare(model_class, nodes):
     if nodes > 1:
         workers = []
         if nodes == 2:
@@ -46,14 +47,15 @@ def prepare(model_class, batch, nodes):
             },
             'task': {'type': 'worker', 'index': h.rank}
         })
-        strategy = tf.distribute.experimental.MultiWorkerMirroredStrategy()
+        
         with strategy.scope():
             model_class.create()
     else:
         model_class.create()
 
-def profile(model_class, epochs):
+def profile(model_class, batch, epochs):
     model, tf_data = model_class.model, model_class.tf_data
+    tf_data = tf_data.batch(batch)
     
     if h.rank == 0:
         prof_file = 'results/out_tflow.csv'

@@ -1,7 +1,9 @@
 import pickle
-import argparse
 import socket
 import os
+import subprocess as sub
+import signal
+import argparse
 
 host = socket.gethostname()
 ranks = {
@@ -61,11 +63,10 @@ def get_keys(fname):
     data = load(fname)
     return list(data.keys())
     
-def get_value(model_str, numf, hp, batch, nodes, fname):
-    data = load(fname)
+def get_value(data, model_str, numf, hp, batch, nodes):
     key = my_key(model_str, numf, hp, batch, nodes)
-    
     value = data.get(key)
+    
     if value == None:
         print('No such key')
         
@@ -87,29 +88,97 @@ hp_map = {
     'norm2d': [0]
 }
 
-def prof_parse():
+def insert_prof_args(my_parser, required = True):
     print('\n')
     print('This is ' + host)
 
-    my_parser = argparse.ArgumentParser()
-    my_parser.add_argument('-m', '--model', type=str, required=True, 
+    my_parser.add_argument('-m', '--model', type = str, required = required, 
                            choices = list(hp_map.keys()))
-    my_parser.add_argument('-numf', '--num_features', type=int, required=True,
+    my_parser.add_argument('-numf', '--num_features', type = int, required = required,
                           choices = numf_ls )
     
-    my_parser.add_argument('-hp', '--hyper_param', type=int, required=True )
+    my_parser.add_argument('-hp', '--hyper_param', type = int, required = required )
     
-    my_parser.add_argument('-b', '--batch', type=int, required=True, 
+    my_parser.add_argument('-b', '--batch', type = int, required = required, 
                            choices = batch_ls )
-    my_parser.add_argument('-n', '--nodes', type=int, required=True,
+    my_parser.add_argument('-n', '--nodes', type = int, required = required,
                           choices = nodes_ls )
-    my_parser.add_argument('-e', '--epochs', type=int, default=5)
+    my_parser.add_argument('-e', '--epochs', type = int, default = 5)
     
-    args = my_parser.parse_args()
+    my_parser.add_argument('-target', type = str, required = required)
     
-    print('\n')
-    print(args)
-    print('\n')
-    
-    return args
+    return my_parser
 
+def go(cmd, nodes, timeout):
+    print('RUNNING CMD:')
+    print(cmd)
+    
+    p1 = sub.Popen(cmd, shell=True)
+    print('RAN ON FIRST NODE')
+    
+    if nodes >= 2:
+        p2 = sub.Popen('ssh vm2 "{}"'.format(cmd), shell=True)
+        print('RAN ON SECOND NODE')
+        
+    if nodes == 3:
+        p3 = sub.Popen('ssh vm3 "{}"'.format(cmd), shell=True)
+        print('RAN ON THIRD NODE')
+    
+    def kill(p):
+        try:
+            os.killpg(p.pid, signal.SIGINT) # send signal to the process group
+        except:
+            print('Kill unsuccessful')
+        
+    def comm(p):
+        try:
+            out = p.communicate(timeout=timeout)[0]
+            if p.returncode != 0: 
+                print('Command failed')
+                return False
+            
+            return True
+        
+        except sub.TimeoutExpired:
+            print('Timeout')
+            kill(p)
+            return False
+        
+        except:
+            print('Communication failed')
+            return False
+            
+    success = comm(p1)
+    
+    print('FIRST NODE END')
+    
+    if nodes >= 2:
+        if not success:
+            print('killing p2')
+            kill(p2)
+            
+        else:
+            success = comm(p2)
+            print('SECOND NODE END')
+            
+    if nodes == 3:
+        if not success:
+            print('killing p3')
+            kill(p3)
+            
+        else:
+            success = comm(p3)            
+            print('THIRD NODE END')
+    
+    return success
+
+def clean_go(cmd, nodes, timeout):
+    # run commands
+    success = go(cmd, nodes, timeout)
+
+    if not success:
+        # kill 8890 ports
+        go('fuser -k 8890/tcp', nodes, timeout)
+        print('Failure')
+    
+    return success

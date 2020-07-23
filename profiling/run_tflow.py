@@ -25,9 +25,9 @@ target = args.target
 
 model_class = m.mapp[model_str](numf, hp)
 
-f.prepare(model_class, nodes)
+f.prepare(model_class, batch, nodes)
 
-prof = f.profile(model_class, batch, epochs)
+prof = f.profile(model_class, epochs)
 
 if prof != None:
     df = f.get_ops(prof)

@@ -23,7 +23,7 @@ def dummy(dim, n):
     y = R(42).randint(0,out_size,ds_size)
     y = tf.keras.utils.to_categorical(y, out_size)
     
-    return x,y
+    return tf.data.Dataset.from_tensor_slices((x, y))
     
 def base(layer):    
     model = Sequential()
@@ -37,8 +37,7 @@ class Test:
     def __init__(self, numf, hp, dim):
         self.numf = numf
         self.hp = hp
-        x, y = dummy(dim,numf)
-        self.tf_data = tf.data.Dataset.from_tensor_slices((x, y))
+        self.tf_data = dummy(dim,numf)
         
     def sett(self, model):
         opt = tf.keras.optimizers.SGD(learning_rate=0.01)

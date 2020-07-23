@@ -69,7 +69,7 @@ def big_loop(framework, times, once=False): #times = list of seconds for timeout
                                 timeout=timeout
                             )
                             
-                            if once and success:
+                            if once:
                                 return True
         if(success):
             return True

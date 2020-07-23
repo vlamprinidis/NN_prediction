@@ -31,7 +31,8 @@ def get_ops(source):
     
     return df
 
-def prepare(model_class, nodes):
+def prepare(model_class, batch, nodes):
+    model_class.tf_data = model_class.tf_data.batch(batch)
     if nodes > 1:
         workers = []
         if nodes == 2:
@@ -51,9 +52,8 @@ def prepare(model_class, nodes):
     else:
         model_class.create()
 
-def profile(model_class, batch, epochs):
+def profile(model_class, epochs):
     model, tf_data = model_class.model, model_class.tf_data
-    tf_data = tf_data.batch(batch)
     
     if h.rank == 0:
         prof_file = 'results/out_tflow.csv'

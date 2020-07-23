@@ -1,18 +1,16 @@
 from funs import load, numf_ls, batch_ls, hp_map, get_value, clean_go, insert_prof_args
 import argparse
 
-CMD = '/home/ubuntu/.night/bin/python3 /home/ubuntu/diploma/profiling/{file} -m {model} -numf {numf} -hp {hp} -b {batch} -n {nodes} -e 5 -target {target}'
+CMD = '/home/ubuntu/.night/bin/python3 /home/ubuntu/diploma/profiling/{file} -m {model} -numf {numf} -hp {hp} -b {batch} -n {nodes} -e 10 -target {target} > out.out'
 
 parser = argparse.ArgumentParser()
 parser.add_argument('-run_tflow', action='store_true') #implies default=False and vice versa
 parser.add_argument('-run_torch', action='store_true')
+parser.add_argument('-run_once', action='store_true')
 parser.add_argument('-tf', type = str, default = './results/tflow.pkl', help = 'File to store TensorFlow results')
 parser.add_argument('-pt', type = str, default = './results/torch.pkl', help = 'File to store PyTorch results')
 parser.add_argument('-t','--times', type = int, nargs='+', default = [20*60, 30*60], help='Timeouts in seconds')
-# parser = insert_prof_args(parser, required = False)
 args = parser.parse_args()
-
-print(args.times)
 
 _tflow = load(args.tf)
 _torch = load(args.pt)
@@ -49,12 +47,12 @@ def execute(framework, model, numf, hp, batch, nodes, timeout):
         return clean_go(cmd, nodes, timeout)
 
     else:
-        print('Combination exists: {} numf{} hp{} batch{} nodes{} fw{}'.format(
+        print('Combination exists: {} numf{} hp{} batch{} nodes{} framework_{}'.format(
             model,numf,hp,batch,nodes,framework
         ))
-        return None
+        return False
 
-def big_loop(framework, times): #times = list of seconds for timeout
+def big_loop(framework, times, once=False): #times = list of seconds for timeout
     for timeout in times:
         for nodes in [3,2,1]:
             for model in list(hp_map):
@@ -69,13 +67,18 @@ def big_loop(framework, times): #times = list of seconds for timeout
                                 batch=batch, 
                                 nodes=nodes, 
                                 timeout=timeout
-                            ) and success
+                            )
+                            
+                            if once and success:
+                                return True
         if(success):
-            break
+            return True
+    
+    return success
 
 if args.run_tflow:
-    big_loop('tflow', args.times)
+    big_loop('tflow', args.times, args.run_once)
 
 if args.run_torch:
-    big_loop('torch', args.times)
+    big_loop('torch', args.times, args.run_once)
 

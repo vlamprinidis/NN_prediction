@@ -1,4 +1,4 @@
-from funs import numf_ls, batch_ls, hp_map, get_value
+from funs import numf_ls, batch_ls, hp_map, get_value, load
 
 _tflow = load('./results/tflow.pkl')
 _torch = load('./results/torch.pkl')

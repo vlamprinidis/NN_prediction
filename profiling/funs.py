@@ -88,24 +88,24 @@ hp_map = {
     'norm2d': [0]
 }
 
-def insert_prof_args(my_parser, required = True):
+def insert_prof_args(my_parser):
     print('\n')
     print('This is ' + host)
 
-    my_parser.add_argument('-m', '--model', type = str, required = required, 
+    my_parser.add_argument('-m', '--model', type = str, required = True, 
                            choices = list(hp_map.keys()))
-    my_parser.add_argument('-numf', '--num_features', type = int, required = required,
+    my_parser.add_argument('-numf', '--num_features', type = int, required = True,
                           choices = numf_ls )
     
-    my_parser.add_argument('-hp', '--hyper_param', type = int, required = required )
+    my_parser.add_argument('-hp', '--hyper_param', type = int, required = True )
     
-    my_parser.add_argument('-b', '--batch', type = int, required = required, 
+    my_parser.add_argument('-b', '--batch', type = int, required = True, 
                            choices = batch_ls )
-    my_parser.add_argument('-n', '--nodes', type = int, required = required,
+    my_parser.add_argument('-n', '--nodes', type = int, required = True,
                           choices = nodes_ls )
     my_parser.add_argument('-e', '--epochs', type = int, default = 5)
     
-    my_parser.add_argument('-target', type = str, required = required)
+    my_parser.add_argument('-target', type = str, required = True)
     
     return my_parser
 

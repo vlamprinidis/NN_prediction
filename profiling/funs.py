@@ -181,19 +181,14 @@ def clean_go(cmd, nodes, timeout):
     
     return success
 
-_tflow = load('data.tflow')
-_torch = load('data.torch')
-
-CMD = '/home/ubuntu/.night/bin/python3 /home/ubuntu/diploma/profiling/{file} -m {model} -numf {numf} -hp {hp} -b {batch} -n {nodes} -e 10 >> prof_all.out 2>> prof_all.err'
-
-def execute_prof(framework, model, numf, hp, batch, nodes, timeout):    
-    if framework == 'tflow':
-        data = _tflow
-    elif framework == 'torch':
-        data = _torch
-    else:
+def execute_prof(framework, model, numf, hp, batch, nodes, timeout, frame_to_load = None):    
+    if framework not in ['tflow', 'torch']:
         raise NameError('Enter tflow or torch')
-        
+    
+    data = load('data.{}'.format(framework)) if frame_to_load == None else frame_to_load[framework]
+    
+    CMD = '/home/ubuntu/.night/bin/python3 /home/ubuntu/diploma/profiling/{file} -m {model} -numf {numf} -hp {hp} -b {batch} -n {nodes} -e 10 >> prof_all.out 2>> prof_all.err'
+    
     if get_value(data=data, model_str=model, numf=numf, hp=hp, batch=batch, nodes=nodes) == None:
         
         print('Combination missing: {} numf{} hp{} batch{} nodes{} framework_{}'.format(

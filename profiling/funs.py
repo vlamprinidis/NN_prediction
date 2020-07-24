@@ -105,8 +105,6 @@ def insert_prof_args(my_parser):
                           choices = nodes_ls )
     my_parser.add_argument('-e', '--epochs', type = int, default = 5)
     
-    my_parser.add_argument('-target', type = str, required = True)
-    
     return my_parser
 
 def go(cmd, nodes, timeout):
@@ -182,3 +180,40 @@ def clean_go(cmd, nodes, timeout):
         print('Failure')
     
     return success
+
+_tflow = load('data.tflow')
+_torch = load('data.torch')
+
+CMD = '/home/ubuntu/.night/bin/python3 /home/ubuntu/diploma/profiling/{file} -m {model} -numf {numf} -hp {hp} -b {batch} -n {nodes} -e 10 >> prof_all.out 2>> prof_all.err'
+
+def execute_prof(framework, model, numf, hp, batch, nodes, timeout):    
+    if framework == 'tflow':
+        data = _tflow
+    elif framework == 'torch':
+        data = _torch
+    else:
+        raise NameError('Enter tflow or torch')
+        
+    if get_value(data=data, model_str=model, numf=numf, hp=hp, batch=batch, nodes=nodes) == None:
+        
+        print('Combination missing: {} numf{} hp{} batch{} nodes{} framework_{}'.format(
+            model,numf,hp,batch,nodes, framework
+        ))
+        
+        cmd = CMD.format(
+            file = 'run_{}.py'.format(framework),
+            model = model,
+            numf = numf,
+            hp = hp,
+            batch = batch,
+            nodes = nodes
+        )
+        
+        # run commands
+        return clean_go(cmd, nodes, timeout)
+
+    else:
+        print('Combination exists: {} numf{} hp{} batch{} nodes{} framework_{}'.format(
+            model,numf,hp,batch,nodes,framework
+        ))
+        return False

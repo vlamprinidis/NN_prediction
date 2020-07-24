@@ -1,5 +1,7 @@
 *.ipynb
-*.pkl
+data.tflow
+data.torch
 *.csv
 *.pyc
 *.out
+*.err

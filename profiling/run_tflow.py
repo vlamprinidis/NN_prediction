@@ -21,7 +21,6 @@ hp = args.hyper_param
 batch = args.batch
 nodes = args.nodes
 epochs = args.epochs
-target = args.target
 
 model_class = m.mapp[model_str](numf, hp)
 
@@ -35,6 +34,6 @@ if prof != None:
     key = h.my_key(model_str, numf, hp, batch, nodes)
     value = h.my_value(df, epochs)
     
-    h.update(key, value, target)
+    h.update(key, value, 'data.tflow')
 
 print('\n\n')

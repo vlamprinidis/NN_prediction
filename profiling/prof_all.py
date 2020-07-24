@@ -24,7 +24,7 @@ def big_loop(framework, times, once=False): #times = list of seconds for timeout
                                 nodes=nodes, 
                                 timeout=timeout
                             )
-                            
+                            print('Success') if success else print('Failure')
                             if once:
                                 return True
         if(success):

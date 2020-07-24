@@ -1,7 +1,7 @@
 from funs import load, numf_ls, batch_ls, hp_map, get_value, clean_go, insert_prof_args
 import argparse
 
-CMD = '/home/ubuntu/.night/bin/python3 /home/ubuntu/diploma/profiling/{file} -m {model} -numf {numf} -hp {hp} -b {batch} -n {nodes} -e 10 -target {target} > out.out'
+CMD = '/home/ubuntu/.night/bin/python3 /home/ubuntu/diploma/profiling/{file} -m {model} -numf {numf} -hp {hp} -b {batch} -n {nodes} -e 10 -target {target} >> out.out 2>> out.err'
 
 parser = argparse.ArgumentParser()
 parser.add_argument('-run_tflow', action='store_true') #implies default=False and vice versa

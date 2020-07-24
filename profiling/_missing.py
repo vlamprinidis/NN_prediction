@@ -1,7 +1,7 @@
 from funs import numf_ls, batch_ls, hp_map, get_value, load
 
-_tflow = load('./results/tflow.pkl')
-_torch = load('./results/torch.pkl')
+_tflow = load('tflow.pkl')
+_torch = load('torch.pkl')
 
 for nodes in [3,2,1]:
     for model in list(hp_map):

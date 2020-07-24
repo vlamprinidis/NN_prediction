@@ -7,8 +7,8 @@ parser = argparse.ArgumentParser()
 parser.add_argument('-run_tflow', action='store_true') #implies default=False and vice versa
 parser.add_argument('-run_torch', action='store_true')
 parser.add_argument('-run_once', action='store_true')
-parser.add_argument('-tf', type = str, default = './results/tflow.pkl', help = 'File to store TensorFlow results')
-parser.add_argument('-pt', type = str, default = './results/torch.pkl', help = 'File to store PyTorch results')
+parser.add_argument('-tf', type = str, default = 'tflow.pkl', help = 'File to store TensorFlow results')
+parser.add_argument('-pt', type = str, default = 'torch.pkl', help = 'File to store PyTorch results')
 parser.add_argument('-t','--times', type = int, nargs='+', default = [20*60, 30*60], help='Timeouts in seconds')
 args = parser.parse_args()
 

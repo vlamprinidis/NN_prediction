@@ -58,7 +58,7 @@ def profile(model_class, batch, epochs):
     tf_data = tf_data.batch(batch)
     
     if h.rank == 0:
-        prof_file = 'results/out_tflow.csv'
+        prof_file = 'out_tflow.csv'
         logdir = '/home/ubuntu/logs_tflow'
         os.system('rm -rf {}'.format(logdir))
 

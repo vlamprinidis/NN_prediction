@@ -24,15 +24,6 @@ def my_key(model_str, numf, hp, batch, nodes):
     
     return key
 
-def my_value(df, epochs):
-    value = {
-        'table':df,
-        'epochs': epochs,
-        'rank': rank
-    }
-    
-    return value
-
 # This can overwrite the file, don't use outside funs
 def _save(data, fname):
     with open(fname, 'wb') as fp:

@@ -2,7 +2,7 @@ from funs import insert_prof_args, execute_prof
 import argparse
 
 parser = argparse.ArgumentParser()
-parser.add_argument('-t','--times', type = int, nargs='+', default = [20*60, 30*60], help='Timeouts in seconds')
+parser.add_argument('-t','--timeout', type = int, default = 30*60, help='Timeout in seconds')
 
 group = parser.add_mutually_exclusive_group(required=True)
 group.add_argument('-tflow', action='store_true') #implies default=False and vice versa
@@ -17,7 +17,7 @@ success = execute_prof(
             hp = args.hyper_param,
             batch = args.batch, 
             nodes = args.nodes, 
-            timeout = args.times[0]
+            timeout = args.timeout
         )
 
 print('Success') if success else print('Failure')

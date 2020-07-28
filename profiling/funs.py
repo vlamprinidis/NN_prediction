@@ -24,7 +24,7 @@ def my_key(model_str, numf, hp, batch, nodes):
     
     return key
 
-# This can overwrite the file, don't use outside funs
+# This can overwrite the file
 def _save(data, fname):
     with open(fname, 'wb') as fp:
         pickle.dump(data, fp)

@@ -2,7 +2,7 @@ import sys
 import os
 import numpy as np
 from numpy.random import RandomState as R
-
+seed = 43
 # Tensorflow
 
 import tensorflow as  tf
@@ -14,13 +14,13 @@ def dummy(dim, n):
     ds_size = 5000
     out_size = 10
     if dim == 1:
-        x = R(42).random((ds_size, n))
+        x = R(seed).random((ds_size, n))
         x = x.reshape(x.shape[0], n, 1)
     else:
-        x = R(42).random((ds_size, n, n))
+        x = R(seed).random((ds_size, n, n))
         x = x.reshape(x.shape[0], n, n, 1)
     
-    y = R(42).randint(0,out_size,ds_size)
+    y = R(seed).randint(0,out_size,ds_size)
     y = tf.keras.utils.to_categorical(y, out_size)
     
     return tf.data.Dataset.from_tensor_slices((x, y))

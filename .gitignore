@@ -1,7 +1,11 @@
 *.ipynb
-data.tflow
-data.torch
+*.tflow
+*.torch
 *.csv
 *.pyc
 *.out
 *.err
+
+!process.ipynb
+!predict.ipynb
+

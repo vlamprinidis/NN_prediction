@@ -1,21 +1,20 @@
 import torch 
 import torch.nn as nn
-import torchvision
-import torchvision.transforms as transforms
-import torch.nn.functional as F
 from numpy.random import RandomState as R
+
+seed = 44
 
 def dummy(dim, n):
     ds_size = 5000
     out_size = 10
     if dim == 1:
-        x = R(42).random((ds_size, n))
+        x = R(seed).random((ds_size, n))
         x = x.reshape(x.shape[0], 1, n)
     else:
-        x = R(42).random((ds_size, n, n))
+        x = R(seed).random((ds_size, n, n))
         x = x.reshape(x.shape[0], 1, n, n)
     
-    y = R(42).randint(0,out_size,ds_size)
+    y = R(seed).randint(0,out_size,ds_size)
     
     x = torch.from_numpy(x).type(torch.FloatTensor)
     y = torch.from_numpy(y).type(torch.LongTensor)

@@ -1,11 +1,9 @@
-*.ipynb
+profiling/*.ipynb
+*.ipynb_checkpoints/
 *.tflow
 *.torch
 *.csv
 *.pyc
 *.out
 *.err
-
-!process.ipynb
-!predict.ipynb
 

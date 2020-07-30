@@ -1,14 +1,10 @@
-import sys
-import os
-import numpy as np
-from numpy.random import RandomState as R
-seed = 43
-# Tensorflow
-
-import tensorflow as  tf
+import tensorflow as tf
 from tensorflow.keras.models import Sequential
 from tensorflow.keras import layers  
 from tensorflow.keras.layers import Dense, Flatten
+from numpy.random import RandomState as R
+
+seed = 44
 
 def dummy(dim, n):
     ds_size = 5000

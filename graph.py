@@ -4,7 +4,21 @@ from tensorflow.core.framework import graph_pb2
 from google.protobuf import text_format, json_format
 import tensorflow as tf
 import os
+
+def run_tensorboard():
+    from tensorboard import program
+    from tensorboard import default
+    from tensorboard.compat import tf
+    from tensorboard.plugins import base_plugin
+    from tensorboard.uploader import uploader_subcommand
     
+    tb = program.TensorBoard(default.get_plugins(),
+        subcommands=[uploader_subcommand.UploaderSubcommand()])
+    
+    tb.configure(argv=[None, '--logdir', './logs', '--port', '6008'])
+    url = tb.launch()
+    print(url)
+
 def _from_url(url):
     out = './mygraph.pbtxt'
     os.system('rm -f {}'.format(out))
@@ -24,23 +38,21 @@ def _from_url(url):
     return graph_dict
 
 def tf_graph_dict(Model):
-    logdir = '/home/vlassis/Desktop/Diploma/gtflow'
+    logdir = './logs'
     os.system('rm -rf {}'.format(logdir))
 
     model = Model.model
     data = Model.tf_data.batch(32)
     
     tb = tf.keras.callbacks.TensorBoard(log_dir=logdir)
-    tb.set_model(model)
 
-#     model.fit(data, steps_per_epoch = 4, epochs = 1, callbacks=[tb])
+    model.fit(data, steps_per_epoch = 3, epochs = 1, callbacks=[tb])
         
-#     return _from_url('http://localhost:6008/data/plugin/graphs/graph?run=train')
+    return _from_url('http://localhost:6006/data/plugin/graphs/graph?run=train')
 
 def torch_graph_dict(Model):
-    out = '/home/vlassis/Desktop/Diploma/gtorch'
+    out = './logs'
     os.system('rm -rf {}'.format(out))
-    os.makedirs(out)
     
     from torch.utils.tensorboard import SummaryWriter
     
@@ -54,4 +66,4 @@ def torch_graph_dict(Model):
     writer.add_graph(model, images)
     writer.close()
     
-    return _from_url('http://localhost:6010/data/plugin/graphs/graph?run=.')
+    return _from_url('http://localhost:6006/data/plugin/graphs/graph?run=.')

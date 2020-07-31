@@ -24,21 +24,21 @@ def _from_url(url):
     return graph_dict
 
 def tf_graph_dict(Model):
-    logdir = '/home/ubuntu/gtflow'
+    logdir = '/home/vlassis/Desktop/Diploma/gtflow'
     os.system('rm -rf {}'.format(logdir))
-    os.makedirs(logdir)
 
     model = Model.model
     data = Model.tf_data.batch(32)
     
-    tb_callback = tf.keras.callbacks.TensorBoard(log_dir=logdir, write_graph = True, profile_batch=3)
+    tb = tf.keras.callbacks.TensorBoard(log_dir=logdir)
+    tb.set_model(model)
 
-    model.fit(data, steps_per_epoch = 4, epochs = 1, callbacks=[tb_callback])
+#     model.fit(data, steps_per_epoch = 4, epochs = 1, callbacks=[tb])
         
-    return _from_url('http://localhost:6008/data/plugin/graphs/graph?run=.')
+#     return _from_url('http://localhost:6008/data/plugin/graphs/graph?run=train')
 
 def torch_graph_dict(Model):
-    out = '/home/ubuntu/gtorch'
+    out = '/home/vlassis/Desktop/Diploma/gtorch'
     os.system('rm -rf {}'.format(out))
     os.makedirs(out)
     

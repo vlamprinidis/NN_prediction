@@ -9,7 +9,8 @@ host = socket.gethostname()
 ranks = {
     'vlas-1':0,
     'vlas-2':1,
-    'vlas-3':2
+    'vlas-3':2,
+    'vlassis_ld_pc':-1
 }
 rank = ranks[host]
 

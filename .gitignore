@@ -6,4 +6,4 @@ profiling/*.ipynb
 *.pyc
 *.out
 *.err
-
+!profiling/results/*

@@ -2,7 +2,7 @@ import torch
 import torch.nn as nn
 from numpy.random import RandomState as R
 
-seed = 44
+seed = 45
 
 def dummy(dim, n):
     ds_size = 5000

@@ -4,7 +4,7 @@ from tensorflow.keras import layers
 from tensorflow.keras.layers import Dense, Flatten
 from numpy.random import RandomState as R
 
-seed = 45
+seed = 46
 
 def dummy(dim, n):
     ds_size = 5000

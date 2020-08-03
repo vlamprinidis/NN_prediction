@@ -1,5 +1,4 @@
 logs/
-profiling/*.ipynb
 *.ipynb_checkpoints/
 *.tflow
 *.torch
@@ -8,4 +7,3 @@ profiling/*.ipynb
 *.out
 *.err
 *.sh
-!profiling/results/*

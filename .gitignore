@@ -1,4 +1,4 @@
-profiling/*.ipynb
+*.ipynb
 *.ipynb_checkpoints/
 *.tflow
 *.torch

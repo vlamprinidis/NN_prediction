@@ -38,7 +38,7 @@ def _from_url(url):
     return graph_dict
 
 def tf_graph_dict(Model):
-    logdir = './logs'
+    logdir = './logs_tf'
     os.system('rm -rf {}'.format(logdir))
 
     model = Model.model
@@ -48,7 +48,7 @@ def tf_graph_dict(Model):
 
     model.fit(data, steps_per_epoch = 3, epochs = 1, callbacks=[tb])
         
-    return _from_url('http://localhost:6006/data/plugin/graphs/graph?run=train')
+    return _from_url('http://localhost:6008/data/plugin/graphs/graph?run=train')
 
 def torch_graph_dict(Model):
     out = './logs'

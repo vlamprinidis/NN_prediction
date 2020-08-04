@@ -13,17 +13,23 @@ ranks = {
 }
 rank = ranks[host]
 
-def my_key(model_str, numf, hp, batch, nodes):
+def my_key(dct):
     key = frozenset({
-        ('model_str', model_str),
-        ('numf', numf),
-        ('hp', hp),
-        ('batch', batch),
-        ('nodes', nodes)
+        (key,value) for key,value in dct.items()
     })
-    
+#     key = frozenset({
+#         ('layer', dct['layer']),
+#         ('numf', dct['numf']),
+#         ('channels', dct['channels']),
+#         ('filters', dct['filters']),
+#         ('kernel', dct['kern']),
+#         ('stride', dct['stride']),
+#         ('drop', dct['drop'])
+#         ('batch', dct['batch']),
+#         ('nodes', dct['nodes'])
+#     })
     return key
-
+    
 # This can overwrite the file
 def _save(data, fname):
     with open(fname, 'wb') as fp:
@@ -54,47 +60,58 @@ def get_keys(fname):
     data = load(fname)
     return list(data.keys())
     
-def get_value(data, model_str, numf, hp, batch, nodes):
-    key = my_key(model_str, numf, hp, batch, nodes)
-    value = data.get(key)
+# def get_value(data, model_str, numf, hp, batch, nodes):
+#     key = my_key(model_str, numf, hp, batch, nodes)
+#     value = data.get(key)
     
-    if value == None:
-        print('No such key')
+#     if value == None:
+#         print('No such key')
         
-    return value
+#     return value
 
 numf_ls = [16, 32, 64, 128]
 batch_ls = [32, 64, 128, 256, 512]
 nodes_ls = [1,2,3]
 
-hp_map = {
-    'avg1d': [2,4],
-    'avg2d': [2,4],
-    'conv1d': [2,4,8],
-    'conv2d': [2,4,8],
-    'max1d': [2,4],
-    'max2d': [2,4],
-    'dense': [32,64,128],
-    'norm1d':[0],
-    'norm2d': [0]
-}
+# hp_map = {
+#     'avg1d': [2,4],
+#     'avg2d': [2,4],
+#     'conv1d': [2,4,8],
+#     'conv2d': [2,4,8],
+#     'max1d': [2,4],
+#     'max2d': [2,4],
+#     'dense': [32,64,128],
+#     'norm1d':[0],
+#     'norm2d': [0]
+# }
 
 def insert_prof_args(my_parser):
     print('\n')
     print('This is ' + host)
 
-    my_parser.add_argument('-m', '--model', type = str, required = True, 
+    my_parser.add_argument('-layer', type = str, required = True, 
                            choices = list(hp_map.keys()))
-    my_parser.add_argument('-numf', '--num_features', type = int, required = True,
-                          choices = numf_ls )
     
-    my_parser.add_argument('-hp', '--hyper_param', type = int, required = True )
+    my_parser.add_argument('-numf', type = int, required = True,
+                           choices = numf_ls )
     
-    my_parser.add_argument('-b', '--batch', type = int, required = True, 
+    my_parser.add_argument('-batch', type = int, required = True, 
                            choices = batch_ls )
-    my_parser.add_argument('-n', '--nodes', type = int, required = True,
-                          choices = nodes_ls )
-    my_parser.add_argument('-e', '--epochs', type = int, default = 5)
+    
+    my_parser.add_argument('-nodes', type = int, required = True,
+                           choices = nodes_ls )
+    
+    my_parser.add_argument('-epochs', type = int, required = True)
+    
+    my_parser.add_argument('-channels', type = int, required = True)
+    
+    my_parser.add_argument('-filters', type = int, required = True)
+    
+    my_parser.add_argument('-kernel', type = int, required = True)
+    
+    my_parser.add_argument('-stride', type = int, required = True)
+    
+    my_parser.add_argument('-drop', type = int, required = True)
     
     return my_parser
 
@@ -161,7 +178,7 @@ def go(cmd, nodes, timeout):
     
     return success
 
-def clean_go(cmd, nodes, timeout):
+def clean_go(cmd=, nodes, timeout):
     # run commands
     success = go(cmd, nodes, timeout)
 
@@ -172,34 +189,45 @@ def clean_go(cmd, nodes, timeout):
     
     return success
 
-def execute_prof(framework, model, numf, hp, batch, nodes, timeout, frame_to_load = None):    
+def execute_prof(framework='tflow', layer='conv2d', numf=32, 
+                 hp={}, batch=32, nodes=1, timeout=20*60, frame_to_load = None):
+    
     if framework not in ['tflow', 'torch']:
         raise NameError('Enter tflow or torch')
     
     data = load('data.{}'.format(framework)) if frame_to_load == None else frame_to_load[framework]
     
-    CMD = '/home/ubuntu/.night/bin/python3 /home/ubuntu/diploma/profiling/{file} -m {model} -numf {numf} -hp {hp} -b {batch} -n {nodes} -e 10 >> prof_all.out 2>> prof_all.err'
+    CMD = '/home/ubuntu/.env/bin/python3 /home/ubuntu/profiling/{file} {options} >> prof_all.out 2>> prof_all.err'
     
-    if get_value(data=data, model_str=model, numf=numf, hp=hp, batch=batch, nodes=nodes) == None:
+    OPT = '-layer {} -numf {} -batch {} -nodes {} -epochs {} -channels {} -filters {} -kernel {} -stride {} -drop {}'
+    
+    key = my_key({
+        'layer':layer,
+        'numf':numf,
+        'batch':batch,
+        'nodes':nodes,
+        'epochs':epochs,
+        'channels':channels,
+        'filters':filters,
+        'kernel':kernel,
+        'stride':stride,
+        'drop':drop
+    })
+#     if get_value(data=data, model_str=model, numf=numf, hp=hp, batch=batch, nodes=nodes) == None:
         
-        print('Combination missing: {} numf{} hp{} batch{} nodes{} framework_{}'.format(
-            model,numf,hp,batch,nodes, framework
-        ))
+#         print('Combination missing: {} numf{} hp{} batch{} nodes{} framework_{}'.format(
+#             model,numf,hp,batch,nodes, framework
+#         ))
         
         cmd = CMD.format(
             file = 'run_{}.py'.format(framework),
-            model = model,
-            numf = numf,
-            hp = hp,
-            batch = batch,
-            nodes = nodes
         )
         
         # run commands
         return clean_go(cmd, nodes, timeout)
 
     else:
-        print('Combination exists: {} numf{} hp{} batch{} nodes{} framework_{}'.format(
-            model,numf,hp,batch,nodes,framework
-        ))
+#         print('Combination exists: {} numf{} hp{} batch{} nodes{} framework_{}'.format(
+#             model,numf,hp,batch,nodes,framework
+#         ))
         return False

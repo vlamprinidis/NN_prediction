@@ -25,7 +25,6 @@ def get_ops(source):
     df = df[['Type', 'Operation', '#Occurrences', 
              'Avg. self-time (us)',
              'Total self-time (us)',
-             'Total self-time on Host (%)',
              'Avg. time (us)', 
              'Total time (us)'
             ]]

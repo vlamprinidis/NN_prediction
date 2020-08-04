@@ -1,39 +1,35 @@
-# before running this script, run:
-# <tensorboard --logdir /home/ubuntu/logs_tflow --bind_all >
-# or <./~/diploma/run_tb.sh>
+# before running this script, run: <./run_tf.sh>
 import tensorflow as tf
 import numpy as np
 import os
 import sys
-
-import models_tflow as m
-import funs_tflow as f
-import funs as h
-
+import layers_tflow
+import funs_tflow
+import funs
 import argparse
 
 parser = argparse.ArgumentParser()
 args = h.insert_prof_args(parser).parse_args()
 
-model_str = args.model
-numf = args.num_features
-hp = args.hyper_param
-batch = args.batch
-nodes = args.nodes
-epochs = args.epochs
+hp = {
+    'filters': args.filters
+    'kernel': args.kernel
+    'stride': args.stride
+    'drop': args.drop
+}
 
-model_class = m.mapp[model_str](numf, hp)
+Layer = layers_tflow.mapp[args.layer](numf=args.numf, channels=args.channels, hp=hp)
 
-f.prepare(model_class, nodes)
+funs_tflow.prepare(Layer, args.nodes)
 
-prof = f.profile(model_class, batch, epochs)
+prof = funs_tflow.profile(Layer, args.batch, args.epochs)
 
 if prof != None:
-    df = f.get_ops(prof)
+    df = funs_tflow.get_ops(prof)
     
-    key = h.my_key(model_str, numf, hp, batch, nodes)
+    key = funs.my_key()
     value = df
     
-    h.update(key, value, 'data.tflow')
+    funs.update(key, value, 'data.tflow')
 
 print('\n\n')

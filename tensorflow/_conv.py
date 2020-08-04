@@ -1,11 +1,13 @@
 import tensorflow as tf
 strategy = tf.distribute.experimental.MultiWorkerMirroredStrategy()
+opt = tf.keras.optimizers.SGD(learning_rate=0.01)
+loss = tf.keras.losses.CategoricalCrossentropy(from_logits=True)
 
 from tensorflow.keras.models import Sequential
 from tensorflow.keras import layers  
 from tensorflow.keras.layers import Dense, Flatten
 import argparse
-# from tf_data import give
+from tf_data import give
 import funs_tflow
 from funs_tflow import distribute
 import funs
@@ -38,27 +40,26 @@ model.add(
 model.add( Flatten(name='FLATTEN') )
 model.add( Dense(units = 10, name='FINAL_DENSE') )
 
-if args.nodes > 1:
-    model = distribute(strategy, model, args.nodes)
+nodes = args.nodes
+if nodes > 1:
+    workers = []
+    if nodes == 2:
+        workers = ["10.0.1.121:8890", "10.0.1.104:8890"]
+    else:
+        workers = ["10.0.1.121:8890", "10.0.1.104:8890", "10.0.1.46:8890"]
+    import json
+    os.environ['TF_CONFIG'] = json.dumps({
+        'cluster': {
+            'worker': workers
+        },
+        'task': {'type': 'worker', 'index': funs.rank}
+    })
+
+    with strategy.scope():
+        model.compile(loss=loss, optimizer=opt,
+                  metrics=['accuracy'])
 else:
     model.compile(loss = funs_tflow.loss, optimizer = funs_tflow.opt, metrics=['accuracy'])
-
-from numpy.random import RandomState as R
-seed = 42
-def give(dim, n, channels):
-    ds_size = 1024
-    out_size = 10
-    if dim == 1:
-        x = R(seed).random((ds_size, n, channels))
-        x = x.reshape(x.shape[0], n, channels)
-    else:
-        x = R(seed).random((ds_size, n, n, channels))
-        x = x.reshape(x.shape[0], n, n, channels)
-    
-    y = R(seed).randint(0,out_size,ds_size)
-    y = tf.keras.utils.to_categorical(y, out_size)
-    
-    return x,y
 
 x,y = give(DIM, args.numf, args.channels)
 

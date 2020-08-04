@@ -6,5 +6,5 @@
 *.pyc
 *.out
 *.err
-logs_tf/
-logs_tor/
+*/logs
+

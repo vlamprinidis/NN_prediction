@@ -1,4 +1,7 @@
 import tensorflow as tf
+opt = tf.keras.optimizers.SGD(learning_rate=0.01)
+loss = tf.keras.losses.CategoricalCrossentropy(from_logits=True)
+
 import numpy as np
 import pandas as pd
 import os
@@ -6,11 +9,11 @@ import wget
 
 import sys
 sys.path.append('../')
-import funs as h
+import funs
 
 # This can overwrite the file, don't use outside funs_tflow
 def _save(logdir, target):
-    host = h.host
+    host = funs.host
     dire = '{}/plugins/profile'.format(logdir)
     [entry] = os.listdir(dire)
 
@@ -33,6 +36,28 @@ def get_ops(source):
     
     return df
 
+def distribute(strategy, model, nodes):
+    if(nodes < 2):
+        raise NameError('More nodes needed')
+        
+    workers = []
+    if nodes == 2:
+        workers = ["10.0.1.121:8890", "10.0.1.104:8890"]
+    else:
+        workers = ["10.0.1.121:8890", "10.0.1.104:8890", "10.0.1.46:8890"]
+    import json
+    os.environ['TF_CONFIG'] = json.dumps({
+        'cluster': {
+            'worker': workers
+        },
+        'task': {'type': 'worker', 'index': funs.rank}
+    })
+
+    with strategy.scope():
+        model.compile(loss=loss, optimizer=opt,
+                  metrics=['accuracy'])
+    return model
+
 def profile(model, x, y, batch, epochs):
     def normalize_img(image, label):
         return tf.cast(image, tf.float32) / 255., label
@@ -43,7 +68,7 @@ def profile(model, x, y, batch, epochs):
     dataset = dataset.cache()
     dataset = dataset.prefetch(tf.data.experimental.AUTOTUNE)
 
-    if h.rank == 0:
+    if funs.rank == 0:
         prof_file = 'out_tflow.csv'
         logdir = '/home/ubuntu/simple/tensorflow/logs'
         os.system('rm -rf {}'.format(logdir))

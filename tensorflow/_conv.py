@@ -1,6 +1,3 @@
-DIM = 2
-RESULT = 'conv2d.tflow'
-NAME = 'CONV2D'
 import tensorflow as tf
 strategy = tf.distribute.experimental.MultiWorkerMirroredStrategy()
 
@@ -8,7 +5,6 @@ from tensorflow.keras.models import Sequential
 from tensorflow.keras import layers  
 from tensorflow.keras.layers import Dense, Flatten
 import argparse
-
 from tf_data import give
 import funs_tflow
 import funs
@@ -41,30 +37,10 @@ model.add(
 model.add( Flatten(name='FLATTEN') )
 model.add( Dense(units = 10, name='FINAL_DENSE') )
 
-opt = tf.keras.optimizers.SGD(learning_rate=0.01)
-loss = tf.keras.losses.CategoricalCrossentropy(from_logits=True)
-
-nodes = args.nodes
-if nodes > 1:
-    workers = []
-    if nodes == 2:
-        workers = ["10.0.1.121:8890", "10.0.1.104:8890"]
-    else:
-        workers = ["10.0.1.121:8890", "10.0.1.104:8890", "10.0.1.46:8890"]
-    import json
-    os.environ['TF_CONFIG'] = json.dumps({
-        'cluster': {
-            'worker': workers
-        },
-        'task': {'type': 'worker', 'index': funs.rank}
-    })
-
-    with strategy.scope():
-        model.compile(loss=loss, optimizer=opt,
-                  metrics=['accuracy'])
+if args.nodes > 1:
+    model = distribute(strategy, model, args.nodes)
 else:
-    model.compile(loss=loss, optimizer=opt,
-                      metrics=['accuracy'])
+    model.compile(loss = funs_tflow.loss, optimizer = funs_tflow.opt, metrics=['accuracy'])
 
 x,y = give(DIM, args.numf, args.channels)
 

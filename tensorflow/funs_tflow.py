@@ -8,7 +8,7 @@ import os
 import wget
 
 import sys
-sys.path.append('../')
+sys.path.append('/home/ubuntu/simple')
 import funs
 
 # This can overwrite the file, don't use outside funs_tflow

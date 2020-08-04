@@ -1,7 +1,7 @@
 import torch
 import csv
 import sys
-sys.path.append('../')
+sys.path.append('/home/ubuntu/simple')
 import funs
 import pandas as pd
 

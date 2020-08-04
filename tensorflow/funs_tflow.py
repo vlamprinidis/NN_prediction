@@ -65,8 +65,8 @@ def profile(model, x, y, batch, epochs):
     dataset = tf.data.Dataset.from_tensor_slices((x, y))
     dataset = dataset.map(normalize_img)
     dataset = dataset.batch(batch)
-    dataset = dataset.cache()
-    dataset = dataset.prefetch(tf.data.experimental.AUTOTUNE)
+#     dataset = dataset.cache()
+#     dataset = dataset.prefetch(tf.data.experimental.AUTOTUNE)
 
     if funs.rank == 0:
         prof_file = 'out_tflow.csv'

@@ -1,13 +1,14 @@
 import tensorflow as tf
-
+opt = tf.keras.optimizers.SGD(learning_rate=0.01)
+loss = tf.keras.losses.CategoricalCrossentropy(from_logits=True)
 
 import numpy as np
 import pandas as pd
 import os
 import wget
 
-# import sys
-# sys.path.append('/home/ubuntu/simple')
+import sys
+sys.path.append('/home/ubuntu/simple')
 import funs
 
 # This can overwrite the file, don't use outside funs_tflow

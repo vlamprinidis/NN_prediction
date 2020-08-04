@@ -25,7 +25,7 @@ files = ['_alone.py', '_avg.py', '_conv.py', '_dense.py', '_drop.py', '_max.py',
 
 #TF
 cmd = TF(file = '_conv.py', 
-         p1 = opt['all'](nf=32, b=32, nd=3, e=5, ch=1, dm=1),
+         p1 = opt['all'](nf=32, b=32, nd=1, e=5, ch=1, dm=1),
          p2 = opt['conv'](k=4, f=1, s=1))
 
-clean_go(cmd,3)
+clean_go(cmd,1)

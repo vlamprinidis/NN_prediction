@@ -1,7 +1,5 @@
 import tensorflow as tf
 strategy = tf.distribute.experimental.MultiWorkerMirroredStrategy()
-opt = tf.keras.optimizers.SGD(learning_rate=0.01)
-loss = tf.keras.losses.CategoricalCrossentropy(from_logits=True)
 
 from tensorflow.keras.models import Sequential
 from tensorflow.keras import layers  
@@ -42,23 +40,7 @@ model.add( Dense(units = 10, name='FINAL_DENSE') )
 
 nodes = args.nodes
 if nodes > 1:
-    workers = []
-    if nodes == 2:
-        workers = ["10.0.1.121:8890", "10.0.1.104:8890"]
-    else:
-        workers = ["10.0.1.121:8890", "10.0.1.104:8890", "10.0.1.46:8890"]
-    import json
-    import os
-    os.environ['TF_CONFIG'] = json.dumps({
-        'cluster': {
-            'worker': workers
-        },
-        'task': {'type': 'worker', 'index': funs.rank}
-    })
-
-    with strategy.scope():
-        model.compile(loss=loss, optimizer=opt,
-                  metrics=['accuracy'])
+    distribute(strategy, model, nodes)
 else:
     model.compile(loss = funs_tflow.loss, optimizer = funs_tflow.opt, metrics=['accuracy'])
 

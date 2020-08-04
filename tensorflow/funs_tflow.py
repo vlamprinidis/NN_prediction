@@ -1,6 +1,6 @@
 import tensorflow as tf
 opt = tf.keras.optimizers.SGD(learning_rate=0.01)
-loss = tf.keras.losses.CategoricalCrossentropy(from_logits=True)
+loss = 'categorical_crossentropy'
 
 import numpy as np
 import pandas as pd
@@ -59,11 +59,11 @@ def distribute(strategy, model, nodes):
     return model
 
 def profile(model, x, y, batch, epochs):
-    def normalize_img(image, label):
-        return tf.cast(image, tf.float32) / 255., label
+#     def normalize_img(image, label):
+#         return tf.cast(image, tf.float32) / 255., label
     
     dataset = tf.data.Dataset.from_tensor_slices((x, y))
-    dataset = dataset.map(normalize_img)
+#     dataset = dataset.map(normalize_img)
     dataset = dataset.batch(batch)
 #     dataset = dataset.cache()
 #     dataset = dataset.prefetch(tf.data.experimental.AUTOTUNE)

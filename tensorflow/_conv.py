@@ -55,7 +55,7 @@ if args.nodes > 1:
     })
 
     with strategy.scope():
-        model.compile(loss=loss, optimizer=opt,
+        model.compile(loss=funs_tflow.loss, optimizer=funs_tflow.opt,
                   metrics=['accuracy'])
 else:
     model.compile(loss = funs_tflow.loss, optimizer = funs_tflow.opt, metrics=['accuracy'])

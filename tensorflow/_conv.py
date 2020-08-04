@@ -44,6 +44,7 @@ else:
     model.compile(loss = funs_tflow.loss, optimizer = funs_tflow.opt, metrics=['accuracy'])
 
 from numpy.random import RandomState as R
+seed = 42
 def give(dim, n, channels):
     ds_size = 1024
     out_size = 10

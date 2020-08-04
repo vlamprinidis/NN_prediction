@@ -39,7 +39,23 @@ model.add( Flatten(name='FLATTEN') )
 model.add( Dense(units = 10, name='FINAL_DENSE') )
 
 if args.nodes > 1:
-    distribute(strategy, model, args.nodes)
+    nodes = args.nodes
+    workers = []
+    if nodes == 2:
+        workers = ["10.0.1.121:8890", "10.0.1.104:8890"]
+    else:
+        workers = ["10.0.1.121:8890", "10.0.1.104:8890", "10.0.1.46:8890"]
+    import json
+    os.environ['TF_CONFIG'] = json.dumps({
+        'cluster': {
+            'worker': workers
+        },
+        'task': {'type': 'worker', 'index': funs.rank}
+    })
+
+    with strategy.scope():
+        model.compile(loss=loss, optimizer=opt,
+                  metrics=['accuracy'])
 else:
     model.compile(loss = funs_tflow.loss, optimizer = funs_tflow.opt, metrics=['accuracy'])
 

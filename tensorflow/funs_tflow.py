@@ -58,13 +58,13 @@ def distribute(strategy, model, nodes):
                   metrics=['accuracy'])
     return model
 
-def profile(model, x, y, batch, epochs):
+def profile(model, data, batch, epochs):
 #     def normalize_img(image, label):
 #         return tf.cast(image, tf.float32) / 255., label
     
-    dataset = tf.data.Dataset.from_tensor_slices((x, y))
+#     dataset = tf.data.Dataset.from_tensor_slices((x, y))
 #     dataset = dataset.map(normalize_img)
-    dataset = dataset.batch(batch)
+    data = data.batch(batch)
 #     dataset = dataset.cache()
 #     dataset = dataset.prefetch(tf.data.experimental.AUTOTUNE)
 
@@ -74,7 +74,7 @@ def profile(model, x, y, batch, epochs):
         os.system('rm -rf {}'.format(logdir))
 
         with tf.profiler.experimental.Profile(logdir):
-            model.fit(dataset, epochs = epochs)
+            model.fit(data, epochs = epochs)
             pass
         
         _save(logdir, prof_file)

@@ -60,9 +60,9 @@ if args.nodes > 1:
 else:
     model.compile(loss = funs_tflow.loss, optimizer = funs_tflow.opt, metrics=['accuracy'])
 
-x,y = give(DIM, args.numf, args.channels)
+data = give(DIM, args.numf, args.channels)
 
-prof = funs_tflow.profile(model, x, y, args.batch, args.epochs)
+prof = funs_tflow.profile(model, data, args.batch, args.epochs)
 
 if prof != None:
     key = funs.my_key({

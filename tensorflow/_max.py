@@ -7,6 +7,7 @@ from tensorflow.keras.layers import Dense, Flatten
 import argparse
 from tf_data import give
 import funs_tflow
+from funs_tflow import distribute
 import funs
 
 parser = argparse.ArgumentParser()

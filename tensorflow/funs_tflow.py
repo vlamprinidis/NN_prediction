@@ -1,6 +1,6 @@
 import tensorflow as tf
 opt = tf.keras.optimizers.SGD(learning_rate=0.01)
-loss = 'categorical_crossentropy'
+loss = tf.keras.losses.CategoricalCrossentropy(from_logits=True)
 
 import numpy as np
 import pandas as pd
@@ -58,15 +58,15 @@ def distribute(strategy, model, nodes):
                   metrics=['accuracy'])
     return model
 
-def profile(model, data, batch, epochs):
-#     def normalize_img(image, label):
-#         return tf.cast(image, tf.float32) / 255., label
+def profile(model, x, y, batch, epochs):
+    def normalize_img(image, label):
+        return tf.cast(image, tf.float32) / 255., label
     
-#     dataset = tf.data.Dataset.from_tensor_slices((x, y))
-#     dataset = dataset.map(normalize_img)
-    data = data.batch(batch)
-#     dataset = dataset.cache()
-#     dataset = dataset.prefetch(tf.data.experimental.AUTOTUNE)
+    dataset = tf.data.Dataset.from_tensor_slices((x, y))
+    dataset = dataset.map(normalize_img)
+    dataset = dataset.batch(batch)
+    dataset = dataset.cache()
+    dataset = dataset.prefetch(tf.data.experimental.AUTOTUNE)
 
     if funs.rank == 0:
         prof_file = 'out_tflow.csv'
@@ -74,7 +74,7 @@ def profile(model, data, batch, epochs):
         os.system('rm -rf {}'.format(logdir))
 
         with tf.profiler.experimental.Profile(logdir):
-            model.fit(data, epochs = epochs)
+            model.fit(dataset, epochs = epochs)
             pass
         
         _save(logdir, prof_file)

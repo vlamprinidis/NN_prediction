@@ -24,7 +24,7 @@ opt = {
 files = ['_alone.py', '_avg.py', '_conv.py', '_dense.py', '_drop.py', '_max.py', '_norm.py', '_relu.py']
 
 #TF
-cmd = TF(file = '_conv.py', 
+cmd = PT(file = '_conv.py', 
          p1 = opt['all'](nf=32, b=32, nd=3, e=5, ch=3, dm=2),
          p2 = opt['conv'](k=4, f=1, s=2))
 

@@ -46,6 +46,7 @@ if args.nodes > 1:
     else:
         workers = ["10.0.1.121:8890", "10.0.1.104:8890", "10.0.1.46:8890"]
     import json
+    import os
     os.environ['TF_CONFIG'] = json.dumps({
         'cluster': {
             'worker': workers

@@ -19,22 +19,22 @@ parser.add_argument('-nodes', type = int, required = True,
                            choices = funs.nodes_ls )
 parser.add_argument('-epochs', type = int, required = True)
 parser.add_argument('-channels', type = int, required = True)
-parser.add_argument('-filters', type = int, required = True)
-parser.add_argument('-kernel', type = int, required = True)
-parser.add_argument('-stride', type = int, required = True)
+parser.add_argument('-dim', type = int, required = True)
 args = parser.parse_args()
+
+DIM = args.dim
+RESULT = '__norm{}d.tflow'.format(DIM)
+NAME = 'NORM{}D'.format(DIM)
 
 model = Sequential()
 model.add( 
-    layers.Conv2D(filters = args.filters, kernel_size = args.kernel, 
-                                     name = 'CONV2D', activation = 'relu')
+    layers.BatchNormalization(name = NAME)
 )
 model.add( Flatten(name='FLATTEN') )
 model.add( Dense(units = 10, name='FINAL_DENSE') )
 
 opt = tf.keras.optimizers.SGD(learning_rate=0.01)
-# loss = tf.keras.losses.CategoricalCrossentropy(from_logits=True)
-loss=tf.keras.losses.SparseCategoricalCrossentropy(from_logits=True)
+loss = tf.keras.losses.CategoricalCrossentropy(from_logits=True)
 
 nodes = args.nodes
 if nodes > 1:
@@ -58,20 +58,16 @@ else:
     model.compile(loss=loss, optimizer=opt,
                       metrics=['accuracy'])
 
-x,y = give(2, args.numf, args.channels)
+x,y = give(DIM, args.numf, args.channels)
 
-prof = funs_tflow.profile(model, x,y, args.batch, args.epochs)
+prof = funs_tflow.profile(model, x, y, args.batch, args.epochs)
 
 if prof != None:
     key = funs.my_key({
             'numf':args.numf,
             'batch':args.batch,
             'nodes':args.nodes,
-            'epochs':args.epochs,
-            'channels':args.channels,
-            'filters':args.filters,
-            'kernel':args.kernel,
-            'stride':args.stride
+            'channels':args.channels
         })
     value = funs_tflow.get_ops(prof)
-    funs.update(key, value, 'conv2d.tflow')
+    funs.update(key, value, RESULT)

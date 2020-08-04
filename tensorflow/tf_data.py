@@ -14,9 +14,6 @@ def give(dim, n, channels):
         x = x.reshape(x.shape[0], n, n, channels)
     
     y = R(seed).randint(0,out_size,ds_size)
-#     y = tf.keras.utils.to_categorical(y, out_size)
+    y = tf.keras.utils.to_categorical(y, out_size)
     
     return x,y
-
-# def give(x,y):
-#     return tf.data.Dataset.from_tensor_slices((x, y))

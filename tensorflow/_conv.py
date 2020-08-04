@@ -39,7 +39,7 @@ model.add( Flatten(name='FLATTEN') )
 model.add( Dense(units = 10, name='FINAL_DENSE') )
 
 if args.nodes > 1:
-    model = distribute(strategy, model, args.nodes)
+    distribute(strategy, model, args.nodes)
 else:
     model.compile(loss = funs_tflow.loss, optimizer = funs_tflow.opt, metrics=['accuracy'])
 

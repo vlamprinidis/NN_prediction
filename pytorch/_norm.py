@@ -28,7 +28,7 @@ model = nn.Sequential(
 train_dataset = give(DIM, args.numf, args.channels)
 
 if args.nodes > 1:
-    model, train_loader = funs_torch.distribute(model, train_dataset, args.nodes, batch)
+    model, train_loader = funs_torch.distribute(model, train_dataset, args.nodes, args.batch)
 else:
     train_loader = torch.utils.data.DataLoader(
         dataset = train_dataset,

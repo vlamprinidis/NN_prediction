@@ -36,7 +36,7 @@ def get_ops(source):
     
     return df
 
-def distribute(strategy, model, nodes):
+def distribute(strategy, Model, nodes):
     if(nodes < 2):
         raise NameError('More nodes needed')
         
@@ -54,9 +54,7 @@ def distribute(strategy, model, nodes):
     })
 
     with strategy.scope():
-        model.compile(loss=loss, optimizer=opt,
-                  metrics=['accuracy'])
-    return model
+        Model.create()
 
 def profile(model, x, y, batch, epochs):
     def normalize_img(image, label):

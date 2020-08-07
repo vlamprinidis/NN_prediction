@@ -7,18 +7,8 @@ import funs_torch
 import funs
 
 parser = argparse.ArgumentParser()
-parser.add_argument('-numf', type = int, required = True,
-                           choices = funs.numf_ls )
-parser.add_argument('-batch', type = int, required = True, 
-                           choices = funs.batch_ls )
-parser.add_argument('-nodes', type = int, required = True,
-                           choices = funs.nodes_ls )
-parser.add_argument('-epochs', type = int, required = True)
-parser.add_argument('-channels', type = int, required = True)
-parser.add_argument('-filters', type = int, required = True)
-parser.add_argument('-kernel', type = int, required = True)
-parser.add_argument('-stride', type = int, required = True)
-parser.add_argument('-dim', type = int, required = True)
+parser = funs.arg_all(parser)
+parser = funs.arg_con(parser)
 args = parser.parse_args()
 
 DIM = args.dim

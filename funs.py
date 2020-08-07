@@ -49,6 +49,29 @@ numf_ls = [16, 32, 64, 128]
 batch_ls = [32, 64, 128, 256, 512]
 nodes_ls = [1,2,3]
 
+def arg_all(parser):
+    parser.add_argument('-numf', type = int, required = True,
+                           choices = numf_ls )
+    parser.add_argument('-batch', type = int, required = True, 
+                               choices = batch_ls )
+    parser.add_argument('-nodes', type = int, required = True,
+                               choices = nodes_ls )
+    parser.add_argument('-epochs', type = int, required = True)
+    parser.add_argument('-channels', type = int, required = True)
+    parser.add_argument('-dim', type = int, required = True)
+    return parser
+
+def arg_conv(parser):
+    parser.add_argument('-filters', type = int, required = True)
+    parser.add_argument('-kernel', type = int, required = True)
+    parser.add_argument('-stride', type = int, required = True)
+    return parser
+    
+def arg_pool(parser):
+    parser.add_argument('-pool', type = int, required = True)
+    parser.add_argument('-stride', type = int, required = True)
+    return parser
+    
 def go(cmd, nodes, timeout):
     print('RUNNING CMD:')
     print(cmd)

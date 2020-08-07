@@ -11,36 +11,33 @@ from funs_tflow import distribute
 import funs
 
 parser = argparse.ArgumentParser()
-parser.add_argument('-numf', type = int, required = True,
-                           choices = funs.numf_ls )
-parser.add_argument('-batch', type = int, required = True, 
-                           choices = funs.batch_ls )
-parser.add_argument('-nodes', type = int, required = True,
-                           choices = funs.nodes_ls )
-parser.add_argument('-epochs', type = int, required = True)
-parser.add_argument('-channels', type = int, required = True)
-parser.add_argument('-dim', type = int, required = True)
+parser = funs.arg_all(parser)
 args = parser.parse_args()
 
 DIM = args.dim
 RESULT = '__relu{}d.tflow'.format(DIM)
 NAME = 'RELU{}D'.format(DIM)
 
-model = Sequential()
-model.add( 
-    layers.ReLU(name = NAME)
-)
-model.add( Flatten(name='FLATTEN') )
-model.add( Dense(units = 10, name='FINAL_DENSE') )
+class Relu:
+    def create(self):
+        model = Sequential()
+        model.add( 
+            layers.ReLU(name = NAME)
+        )
+        model.add( Flatten(name='FLATTEN') )
+        model.add( Dense(units = 10, name='FINAL_DENSE') )
+        model.compile(loss = funs_tflow.loss, optimizer = funs_tflow.opt, metrics=['accuracy'])
+        self.model = model
 
+Model = Relu()
 if args.nodes > 1:
-    model = distribute(strategy, model, args.nodes)
+    distribute(strategy, Model, args.nodes)
 else:
-    model.compile(loss = funs_tflow.loss, optimizer = funs_tflow.opt, metrics=['accuracy'])
+    Model.create()
 
 x,y = give(DIM, args.numf, args.channels)
 
-prof = funs_tflow.profile(model, x, y, args.batch, args.epochs)
+prof = funs_tflow.profile(Model.model, x, y, args.batch, args.epochs)
 
 if prof != None:
     key = funs.my_key({

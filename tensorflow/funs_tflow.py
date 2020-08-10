@@ -61,7 +61,7 @@ def profile(model, x, y, batch, epochs):
         return tf.cast(image, tf.float32) / 255., label
     
     dataset = tf.data.Dataset.from_tensor_slices((x, y))
-    dataset = dataset.map(normalize_img)
+#     dataset = dataset.map(normalize_img)
     dataset = dataset.batch(batch)
 #     dataset = dataset.cache()
 #     dataset = dataset.prefetch(tf.data.experimental.AUTOTUNE)

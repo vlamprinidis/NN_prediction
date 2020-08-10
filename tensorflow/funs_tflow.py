@@ -80,6 +80,6 @@ def profile(model, x, y, batch, epochs):
         return prof_file
     
     else:
-        model.fit(tf_data, epochs = epochs)
+        model.fit(dataset, epochs = epochs)
         
         return None

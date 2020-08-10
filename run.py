@@ -10,8 +10,8 @@ from funs import load, numf_ls, batch_ls, clean_go
                         
 #                         print('Success') if success else print('Failure')
 
-TF = '/home/vlassis/.env/bin/python3 /home/vlassis/simple/tensorflow/{file} {p1} {p2}'.format
-PT = '/home/vlassis/.env/bin/python3 /home/vlassis/simple/pytorch/{file} {p1} {p2}'.format
+TF = '/home/vlassis/.env/bin/python3 /home/vlassis/prof_cloud/tensorflow/{file} {p1} {p2}'.format
+PT = '/home/vlassis/.env/bin/python3 /home/vlassis/prof_cloud/pytorch/{file} {p1} {p2}'.format
 
 opt = {
     'all': '-numf {numf} -batch {b} -nodes {nodes} -epochs {e} -channels {ch} -dim {dim}'.format,

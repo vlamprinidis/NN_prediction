@@ -1,7 +1,7 @@
 import torch
 import csv
 import sys
-sys.path.append('/home/vlassis/simple')
+sys.path.append('/home/vlassis/prof_cloud')
 import funs
 import pandas as pd
 

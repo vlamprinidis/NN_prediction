@@ -8,7 +8,7 @@ import os
 import wget
 
 import sys
-sys.path.append('/home/vlassis/simple')
+sys.path.append('/home/vlassis/prof_cloud')
 import funs
 
 # This can overwrite the file, don't use outside funs_tflow
@@ -68,7 +68,7 @@ def profile(model, x, y, batch, epochs):
 
     if funs.rank == 0:
         prof_file = 'out_tflow.csv'
-        logdir = '/home/vlassis/simple/tensorflow/logs'
+        logdir = '/home/vlassis/prof_cloud/tensorflow/logs'
         os.system('rm -rf {}'.format(logdir))
 
         with tf.profiler.experimental.Profile(logdir):

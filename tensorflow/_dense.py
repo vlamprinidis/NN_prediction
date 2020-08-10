@@ -19,7 +19,7 @@ DIM = args.dim
 RESULT = '__dense{}d.tflow'.format(DIM)
 NAME = 'DENSE{}D'.format(DIM)
 
-class Dense:
+class MyDense:
     def create(self):
         model = Sequential()
         model.add( 
@@ -30,7 +30,7 @@ class Dense:
         model.compile(loss = funs_tflow.loss, optimizer = funs_tflow.opt, metrics=['accuracy'])
         self.model = model
 
-Model = Dense()
+Model = MyDense()
 if args.nodes > 1:
     distribute(strategy, Model, args.nodes)
 else:

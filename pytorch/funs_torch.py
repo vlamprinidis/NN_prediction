@@ -1,7 +1,7 @@
 import torch
 import csv
 import sys
-sys.path.append('/home/ubuntu/simple')
+sys.path.append('/home/vlassis/simple')
 import funs
 import pandas as pd
 
@@ -57,7 +57,7 @@ def distribute(model, train_dataset, nodes, batch):
     def setup(rank, world_size):
         os.environ['MASTER_ADDR'] = '10.0.1.121'
         os.environ['MASTER_PORT'] = '8890'
-        os.environ['GLOO_SOCKET_IFNAME'] = 'ens3'
+        os.environ['GLOO_SOCKET_IFNAME'] = 'ens4'
 
         # initialize the process group
         dist.init_process_group(backend='gloo', 

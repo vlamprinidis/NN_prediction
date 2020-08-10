@@ -6,10 +6,11 @@ import signal
 import argparse
 
 host = socket.gethostname()
+print(host)
 ranks = {
-    'vlas-1':0,
-    'vlas-2':1,
-    'vlas-3':2
+    'vlas':0,
+    'vlas2':1,
+    'vlas3':2
 }
 rank = ranks[host]
 

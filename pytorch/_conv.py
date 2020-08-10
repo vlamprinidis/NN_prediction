@@ -8,7 +8,7 @@ import funs
 
 parser = argparse.ArgumentParser()
 parser = funs.arg_all(parser)
-parser = funs.arg_con(parser)
+parser = funs.arg_conv(parser)
 args = parser.parse_args()
 
 DIM = args.dim

@@ -55,7 +55,7 @@ def distribute(model, train_dataset, nodes, batch):
     from torch.nn.parallel import DistributedDataParallel as DDP
 
     def setup(rank, world_size):
-        os.environ['MASTER_ADDR'] = '10.0.1.121'
+        os.environ['MASTER_ADDR'] = '10.128.0.2'
         os.environ['MASTER_PORT'] = '8890'
         os.environ['GLOO_SOCKET_IFNAME'] = 'ens4'
 

@@ -68,7 +68,7 @@ def profile(model, x, y, batch, epochs):
 
     if funs.rank == 0:
         prof_file = 'out_tflow.csv'
-        logdir = '/home/ubuntu/simple/tensorflow/logs'
+        logdir = '/home/vlassis/simple/tensorflow/logs'
         os.system('rm -rf {}'.format(logdir))
 
         with tf.profiler.experimental.Profile(logdir):

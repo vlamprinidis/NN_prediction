@@ -81,11 +81,11 @@ def go(cmd, nodes, timeout):
     print('RAN ON FIRST NODE')
     
     if nodes >= 2:
-        p2 = sub.Popen('ssh vm2 "{}"'.format(cmd), shell=True)
+        p2 = sub.Popen('ssh cloud2 "{}"'.format(cmd), shell=True)
         print('RAN ON SECOND NODE')
         
     if nodes == 3:
-        p3 = sub.Popen('ssh vm3 "{}"'.format(cmd), shell=True)
+        p3 = sub.Popen('ssh cloud3 "{}"'.format(cmd), shell=True)
         print('RAN ON THIRD NODE')
     
     def kill(p):

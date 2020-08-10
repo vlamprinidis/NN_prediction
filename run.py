@@ -10,22 +10,23 @@ from funs import load, numf_ls, batch_ls, clean_go
                         
 #                         print('Success') if success else print('Failure')
 
-TF = '/home/ubuntu/.env/bin/python3 /home/ubuntu/simple/tensorflow/{file} {p1} {p2}'.format
-PT = '/home/ubuntu/.env/bin/python3 /home/ubuntu/simple/pytorch/{file} {p1} {p2}'.format
+TF = '/home/vlassis/.env/bin/python3 /home/vlassis/simple/tensorflow/{file} {p1} {p2}'.format
+PT = '/home/vlassis/.env/bin/python3 /home/vlassis/simple/pytorch/{file} {p1} {p2}'.format
 
 opt = {
-    'all': '-numf {nf} -batch {b} -nodes {nd} -epochs {e} -channels {ch} -dim {dm}'.format,
-    'conv': '-kern {k} -filters {f} -stride {s}'.format,
-    'pool': '-pool {p} -stride {s}'.format,
-    'dense': '-units {u}'.format,
-    'drop': '-drop {dr}'.format
+    'all': '-numf {numf} -batch {b} -nodes {nodes} -epochs {e} -channels {ch} -dim {dim}'.format,
+    'conv': '-kern {kernel} -filters {filters} -stride {stride}'.format,
+    'pool': '-pool {pool} -stride {s}'.format,
+    'dense': '-units {units}'.format,
+    'drop': '-drop {drop}'.format
 }
 
 files = ['_alone.py', '_avg.py', '_conv.py', '_dense.py', '_drop.py', '_max.py', '_norm.py', '_relu.py']
 
+NODES = 1
 #TF
 cmd = TF(file = '_conv.py', 
-         p1 = opt['all'](nf=32, b=32, nd=1, e=5, ch=1, dm=1),
-         p2 = opt['conv'](k=4, f=1, s=1))
+         p1 = opt['all'](numf=32, b=32, nodes=NODES, e=5, ch=1, dim=1),
+         p2 = opt['conv'](kernel=4, filters=1, stride=1))
 
-clean_go(cmd,1)
+clean_go(cmd,NODES)

@@ -138,7 +138,7 @@ def go(cmd, nodes, timeout):
 
 def clean_go(cmd, nodes, timeout=20*60):
     # run commands
-    success = go(cmd + ' >> prof.out 2>> prof.err', nodes, timeout)
+    success = go(cmd + ' > prof.out 2> prof.err', nodes, timeout)
 
     if not success:
         # kill 8890 ports

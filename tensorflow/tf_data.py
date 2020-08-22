@@ -1,7 +1,7 @@
 import tensorflow as tf
 from numpy.random import RandomState as R
 
-seed = 46
+seed = 47
 
 def give(dim, n, channels):
     ds_size = 1024

@@ -1,7 +1,7 @@
 import torch
 from numpy.random import RandomState as R
 
-seed = 47
+seed = 48
 
 def give(dim, n, channels):
     ds_size = 1024

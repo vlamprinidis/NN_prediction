@@ -2,8 +2,8 @@ from funs import load, numf_ls, batch_ls, clean_go
 
 # frame_to_load = {'tflow': load('data.tflow'), 'torch': load('data.torch')}
 
-TF = '/home/vlassis/.env/bin/python3 /home/vlassis/prof_cloud/tensorflow/{file} {p1} {p2}'.format
-PT = '/home/vlassis/.env/bin/python3 /home/vlassis/prof_cloud/pytorch/{file} {p1} {p2}'.format
+TF = '/home/ubuntu/.env/bin/python3 /home/ubuntu/vms/tensorflow/{file} {p1} {p2}'.format
+PT = '/home/ubuntu/.env/bin/python3 /home/ubuntu/vms/pytorch/{file} {p1} {p2}'.format
 
 opt = {
     'all': '-numf {numf} -batch {b} -nodes {nodes} -epochs {e} -channels {ch} -dim {dim}'.format,

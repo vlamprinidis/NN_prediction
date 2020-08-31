@@ -88,11 +88,11 @@ def distribute(model, train_dataset, nodes, batch):
     
     return model, train_loader
 
-def profile(model, train_loader, epochs):    
+def profile(model, train_loader, given_epochs):    
     criterion = torch.nn.CrossEntropyLoss()
     optimizer = torch.optim.SGD(model.parameters(), lr = 0.01)
     
-    def train():
+    def train(epochs):
         total_step = len(train_loader)
         print(total_step)
 
@@ -111,10 +111,11 @@ def profile(model, train_loader, epochs):
                     print ('Epoch [{}/{}], Step [{}/{}], Loss: {}' 
                            .format(epoch+1, epochs, i+1, total_step, loss))
     
+    train(1)
     if funs.rank == 0:
         prof_file = 'out_torch.csv'
         with torch.autograd.profiler.profile() as prof:
-            train()
+            train(given_epochs)
 
         # save results
         _save(prof.key_averages(), prof_file)

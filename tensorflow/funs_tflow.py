@@ -62,6 +62,7 @@ def profile(model, x, y, batch, epochs):
 #     dataset = dataset.cache()
 #     dataset = dataset.prefetch(tf.data.experimental.AUTOTUNE)
 
+    model.fit(dataset, epochs = 1)
     if funs.rank == 0:
         prof_file = 'out_tflow.csv'
         logdir = '/home/ubuntu/vms/tensorflow/logs'

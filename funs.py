@@ -8,9 +8,9 @@ import argparse
 host = socket.gethostname()
 print(host)
 ranks = {
-    'vlas':0,
-    'vlas2':1,
-    'vlas3':2
+    'vlas-1':0,
+    'vlas-2':1,
+    'vlas-3':2
 }
 rank = ranks[host]
 
@@ -81,11 +81,11 @@ def go(cmd, nodes, timeout):
     print('RAN ON FIRST NODE')
     
     if nodes >= 2:
-        p2 = sub.Popen('ssh cloud2 "{}"'.format(cmd), shell=True)
+        p2 = sub.Popen('ssh vm2 "{}"'.format(cmd), shell=True)
         print('RAN ON SECOND NODE')
         
     if nodes == 3:
-        p3 = sub.Popen('ssh cloud3 "{}"'.format(cmd), shell=True)
+        p3 = sub.Popen('ssh vm3 "{}"'.format(cmd), shell=True)
         print('RAN ON THIRD NODE')
     
     def kill(p):

@@ -8,7 +8,7 @@ import os
 import wget
 
 import sys
-sys.path.append('/home/vlassis/prof_cloud')
+sys.path.append('/home/ubuntu/vms')
 import funs
 
 # This can overwrite the file, don't use outside funs_tflow
@@ -42,9 +42,9 @@ def distribute(strategy, Model, nodes):
         
     workers = []
     if nodes == 2:
-        workers = ["10.128.0.2:8890", "10.128.0.3:8890"]
+        workers = ["10.0.1.121:8890", "10.0.1.104:8890"]
     else:
-        workers = ["10.128.0.2:8890", "10.128.0.3:8890", "10.128.0.4:8890"]
+        workers = ["10.0.1.121:8890", "10.0.1.104:8890", "10.0.1.46:8890"]
     import json
     os.environ['TF_CONFIG'] = json.dumps({
         'cluster': {
@@ -64,7 +64,7 @@ def profile(model, x, y, batch, epochs):
 
     if funs.rank == 0:
         prof_file = 'out_tflow.csv'
-        logdir = '/home/vlassis/prof_cloud/tensorflow/logs'
+        logdir = '/home/ubuntu/vms/tensorflow/logs'
         os.system('rm -rf {}'.format(logdir))
 
         with tf.profiler.experimental.Profile(logdir):

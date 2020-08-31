@@ -1,7 +1,7 @@
 import torch
 import csv
 import sys
-sys.path.append('/home/vlassis/prof_cloud')
+sys.path.append('/home/ubuntu/vms')
 import funs
 import pandas as pd
 
@@ -55,9 +55,9 @@ def distribute(model, train_dataset, nodes, batch):
     from torch.nn.parallel import DistributedDataParallel as DDP
 
     def setup(rank, world_size):
-        os.environ['MASTER_ADDR'] = '10.128.0.2'
+        os.environ['MASTER_ADDR'] = '10.0.1.121'
         os.environ['MASTER_PORT'] = '8890'
-        os.environ['GLOO_SOCKET_IFNAME'] = 'ens4'
+        os.environ['GLOO_SOCKET_IFNAME'] = 'ens3'
 
         # initialize the process group
         dist.init_process_group(backend='gloo', 

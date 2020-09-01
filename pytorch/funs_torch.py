@@ -123,5 +123,5 @@ def profile(model, train_loader, given_epochs):
         return prof_file
     
     else:
-        train()
+        train(given_epochs)
         return None

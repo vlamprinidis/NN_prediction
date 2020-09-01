@@ -1,9 +1,8 @@
-logs/
+logs_tf/
+log_tor/
 *.ipynb_checkpoints/
-*.tflow
-*.torch
 *.csv
 *.pyc
 *.out
 *.err
-*.sh
+pytorch/mnist_data/

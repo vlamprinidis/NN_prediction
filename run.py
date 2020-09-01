@@ -21,7 +21,7 @@ for nodes in [3,2,1]:
         for batch in batch_ls:
             for channels in [1,3]:
                 for dim in [1,2]:
-                    for FRAME in [TF, PT]:
+                    for FRAME in [PT, TF]:
                         
                         opt_all = opt['all'](numf=numf, b=batch, nodes=nodes, e=epochs, ch=channels, dim=dim)
                         

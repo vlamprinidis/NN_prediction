@@ -61,15 +61,16 @@ def profile(model, x, y, batch, epochs):
     dataset = dataset.batch(batch)
 #     dataset = dataset.cache()
 #     dataset = dataset.prefetch(tf.data.experimental.AUTOTUNE)
-
-    model.fit(dataset, epochs = 1)
+    
+    EPOCHS = 1
+#     model.fit(dataset, epochs = 1)
     if funs.rank == 0:
         prof_file = 'out_tflow.csv'
         logdir = '/home/ubuntu/vms/tensorflow/logs'
         os.system('rm -rf {}'.format(logdir))
 
         with tf.profiler.experimental.Profile(logdir):
-            model.fit(dataset, epochs = epochs)
+            model.fit(dataset, epochs = EPOCHS)
             pass
         
         _save(logdir, prof_file)
@@ -77,6 +78,6 @@ def profile(model, x, y, batch, epochs):
         return prof_file
     
     else:
-        model.fit(dataset, epochs = epochs)
+        model.fit(dataset, epochs = EPOCHS)
         
         return None

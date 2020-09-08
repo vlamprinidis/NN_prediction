@@ -111,11 +111,12 @@ def profile(model, train_loader, given_epochs):
                     print ('Epoch [{}/{}], Step [{}/{}], Loss: {}' 
                            .format(epoch+1, epochs, i+1, total_step, loss))
     
-    train(1)
+    EPOCHS = 1
+    #     train(1)
     if funs.rank == 0:
         prof_file = 'out_torch.csv'
         with torch.autograd.profiler.profile() as prof:
-            train(given_epochs)
+            train(EPOCHS)
 
         # save results
         _save(prof.key_averages(), prof_file)
@@ -123,5 +124,5 @@ def profile(model, train_loader, given_epochs):
         return prof_file
     
     else:
-        train(given_epochs)
+        train(EPOCHS)
         return None

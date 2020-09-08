@@ -51,10 +51,10 @@ def distribute(strategy, Model, nodes):
     })
 
     with strategy.scope():
-        model = Model()
+        model = Model.create()
     
     return model
-
+    
 def train(model, dataset, batch, epochs):
     dataset = dataset.batch(batch)
 

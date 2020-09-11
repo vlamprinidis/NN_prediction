@@ -111,7 +111,7 @@ def profile(model, train_loader, given_epochs):
                     print ('Epoch [{}/{}], Step [{}/{}], Loss: {}' 
                            .format(epoch+1, epochs, i+1, total_step, loss))
     
-    EPOCHS = 1
+    EPOCHS = given_epochs
     #     train(1)
     if funs.rank == 0:
         prof_file = 'out_torch.csv'

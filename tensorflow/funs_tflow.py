@@ -59,10 +59,8 @@ def distribute(strategy, Model, nodes):
 def profile(model, x, y, batch, epochs):
     dataset = tf.data.Dataset.from_tensor_slices((x, y))
     dataset = dataset.batch(batch)
-#     dataset = dataset.cache()
-#     dataset = dataset.prefetch(tf.data.experimental.AUTOTUNE)
     
-    EPOCHS = 1
+    EPOCHS = epochs
 #     model.fit(dataset, epochs = 1)
     if funs.rank == 0:
         prof_file = 'out_tflow.csv'

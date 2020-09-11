@@ -6,3 +6,7 @@ log_tor/
 *.out
 *.err
 pytorch/mnist_data/
+*.tflow
+*.torch
+*.tflow_db
+*.torch_db

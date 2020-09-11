@@ -2,21 +2,11 @@ import os
 import subprocess as sub
 import signal
 
-import socket
-host = socket.gethostname()
-print(host)
-ranks = {
-    'vlas-1':0,
-    'vlas-2':1,
-    'vlas-3':2
-}
-rank = ranks[host]
-
 def go(cmd, nodes, timeout):
     print('RUNNING CMD:')
     print(cmd)
     
-    p1 = sub.Popen(cmd, shell=True)
+    p1 = sub.Popen('ssh vm1 "{}"'.format(cmd), shell=True)
     print('RAN ON FIRST NODE')
     
     if nodes >= 2:

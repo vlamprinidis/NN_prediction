@@ -42,8 +42,8 @@ def extract(model, the_dim,
         Info['numf'] = inp[1]
         
         if len(inp) == 2:
-            Info['dim'] = 0
-            #Info['channels'] = 1
+            Info['dim'] = 1
+            Info['channels'] = 1
         elif len(inp) == 3:
             Info['dim'] = 1
             Info['channels'] = inp[2]

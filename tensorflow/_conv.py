@@ -24,7 +24,7 @@ class Conv:
     def create(self):
         model = Sequential()
         model.add( 
-            conv(filters = args.filters, kernel_size = args.kernel, stride = args.stride,
+            conv(filters = args.filters, kernel_size = args.kernel, strides = args.stride,
                                              name = NAME)
         )
         model.add( Flatten(name='FLATTEN') )

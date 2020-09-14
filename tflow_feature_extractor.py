@@ -10,8 +10,8 @@ def extract(model, the_dim,
     }
 
     Search = {
-        'Conv1D':['filters', 'kernel_size'],
-        'Conv2D':['filters', 'kernel_size'],
+        'Conv1D':['filters', 'kernel_size', 'strides'],
+        'Conv2D':['filters', 'kernel_size', 'strides'],
         'AveragePooling1D':['pool_size', 'strides'],
         'AveragePooling2D':['pool_size', 'strides'],
         'MaxPooling1D':['pool_size', 'strides'],
@@ -52,6 +52,7 @@ def extract(model, the_dim,
             Info['channels'] = inp[3]
             
         Info['input_shape'] = layer.input.shape
+        Info['output_shape'] = layer.output.shape
         
         if name in Search.keys():
             search = Search[name]

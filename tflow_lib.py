@@ -54,6 +54,27 @@ def distribute(strategy, Model, nodes):
     with strategy.scope():
         Model.create()
 
+tf_ops = ['Conv1D', 'Conv2D', 
+          'AveragePooling1D', 'AveragePooling2D', 
+          'MaxPooling1D', 'MaxPooling2D',
+          'Dense',
+          'BatchNormalization',
+          'Dropout',
+          'ReLU',
+          'tanh'
+         ]
+
+def check(keywords):
+    def find(x):
+        return any(
+            [word in x for word in keywords]
+        )
+    return find
+
+def total_on(df, words, column='Operation'):
+    mask = df[column].apply(check(words))
+    return df[mask]['Total self-time (us)'].sum()
+
 def profile(model, x, y, batch, epochs):
     dataset = tf.data.Dataset.from_tensor_slices((x, y))
     dataset = dataset.batch(batch)
@@ -70,7 +91,9 @@ def profile(model, x, y, batch, epochs):
         
         _save(logdir, prof_file)
         
-        return prof_file
+        df = get_ops(prof_file)
+
+        return total_on(tf_ops)
     
     else:
         model.fit(dataset, epochs = EPOCHS)

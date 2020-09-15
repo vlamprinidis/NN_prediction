@@ -3,6 +3,8 @@ import numpy as np
 
 from sklearn import model_selection
 from sklearn.ensemble import RandomForestRegressor
+from sklearn.linear_model import LinearRegression
+from sklearn.tree import DecisionTreeRegressor
 from sklearn.metrics import r2_score
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import mean_squared_error
@@ -73,14 +75,18 @@ param_map = {
     'drop1d':['numf', 'channels', 'batch', 'nodes', 'drop'], 
     'drop2d':['numf', 'channels', 'batch', 'nodes', 'drop']
 }
+
+def detuple(elem):
+    return elem[0] if isinstance(elem, tuple) else elem
     
-def time_per_step(name_map, pred_map, features, nodes):
+def total_time(name_map, pred_map, features, nodes):
     total = 0
     for layer in features:
         layer_name = layer['name']
         
         if layer_name not in name_map.keys():
-            print('could not find: ', layer['name'])
+            if layer_name != 'Flatten':
+                print('could not find: ', layer['name'])
             continue
             
         dim = layer['dim']
@@ -94,8 +100,8 @@ def time_per_step(name_map, pred_map, features, nodes):
                 layer['channels'],
                 layer['batch'],
                 nodes,
-                layer['kernel'][0],
-                layer['stride'][0],
+                detuple(layer['kernel']),
+                detuple(layer['stride']),
                 layer['filters']
             ]).reshape(1,-1)
             
@@ -105,11 +111,11 @@ def time_per_step(name_map, pred_map, features, nodes):
                 layer['channels'],
                 layer['batch'],
                 nodes,
-                layer['pool'][0],
-                layer['stride'][0]
+                detuple(layer['pool']),
+                detuple(layer['stride'])
             ]).reshape(1,-1)
         
-        elif name in ['norm1d', 'norm2d', 'tanh1d', 'tanh2d', 'relu1d', 'relu2d']:
+        elif name in ['norm1d', 'norm2d', 'tanh1d', 'tanh2d', 'relu1d', 'relu2d', 'flatten1d', 'flatten2d']:
             elem = np.array([
                 layer['numf'],
                 layer['channels'],
@@ -146,7 +152,7 @@ def time_per_step(name_map, pred_map, features, nodes):
         nodes,
     ]).reshape(1,-1)
     
-    [current] = pred_map[name].predict(elem)
+    [current] = pred_map[name].predict(elem) if name in pred_map.keys() else [0]
     total += current
     
     return total
@@ -157,11 +163,11 @@ tflow_pred_map = {}
 for name,params in param_map.items():
     print(name)
     tflow_pred_map[name] = the_train(*tflow_open_layer(name,params))
-    
-# tflow_pred_map = {name: the_train(*tflow_open_layer(name,params)) for name,params in param_map.items()}
 
-tflow_pred_map['dataset1d'] = the_train(*tflow_open_layer('dataset1d',['numf', 'channels', 'batch', 'nodes']))
-tflow_pred_map['dataset2d'] = the_train(*tflow_open_layer('dataset2d',['numf', 'channels', 'batch', 'nodes']))
+# print('dataset1d')
+# tflow_pred_map['dataset1d'] = the_train(*tflow_open_layer('dataset1d',['numf', 'channels', 'batch', 'nodes']))
+# print('dataset2d')
+# tflow_pred_map['dataset2d'] = the_train(*tflow_open_layer('dataset2d',['numf', 'channels', 'batch', 'nodes']))
 
 tflow_name_map = {
     'Conv1D': 'conv1d', 'Conv2D':'conv2d',
@@ -174,9 +180,8 @@ tflow_name_map = {
     'Dense': 'dense'
 }
 
-def tflow_time_per_step(features, nodes):
-    return time_per_step(tflow_name_map, tflow_pred_map, features, nodes)
-
+def tflow_time(features, nodes):
+    return total_time(tflow_name_map, tflow_pred_map, features, nodes)
 
 # Pytorch
 print('PyTorch')
@@ -184,11 +189,16 @@ torch_pred_map = {}
 for name,params in param_map.items():
     print(name)
     torch_pred_map[name] = the_train(*torch_open_layer(name,params))
-    
-# torch_pred_map = {name: the_train(*torch_open_layer(name,params)) for name,params in param_map.items()}
 
-torch_pred_map['dataset1d'] = the_train(*torch_open_layer('dataset1d',['numf', 'channels', 'batch', 'nodes']))
-torch_pred_map['dataset2d'] = the_train(*torch_open_layer('dataset2d',['numf', 'channels', 'batch', 'nodes']))
+print('flatten1d')
+torch_pred_map['flatten1d'] = the_train(*torch_open_layer('flatten1d',['numf', 'channels', 'batch', 'nodes']))
+print('flatten2d')
+torch_pred_map['flatten2d'] = the_train(*torch_open_layer('flatten2d',['numf', 'channels', 'batch', 'nodes']))
+
+# print('dataset1d')
+# torch_pred_map['dataset1d'] = the_train(*torch_open_layer('dataset1d',['numf', 'channels', 'batch', 'nodes']))
+# print('dataset2d')
+# torch_pred_map['dataset2d'] = the_train(*torch_open_layer('dataset2d',['numf', 'channels', 'batch', 'nodes']))
 
 torch_name_map = {
     'Conv1d': 'conv1d', 'Conv2d':'conv2d',
@@ -198,9 +208,10 @@ torch_name_map = {
     'Dropout': 'drop1d', 'Dropout2d': 'drop2d',
     'ReLU': [None, 'relu1d', 'relu2d'],
     'Tanh': [None, 'tanh1d', 'tanh2d'],
+    'Flatten': [None, 'flatten1d', 'flatten2d'],
     'Linear': 'dense'
 }
 
-def torch_time_per_step(features, nodes):
-    return time_per_step(torch_name_map, torch_pred_map, features, nodes)
+def torch_time(features, nodes):
+    return total_time(torch_name_map, torch_pred_map, features, nodes)
     

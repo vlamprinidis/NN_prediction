@@ -1,4 +1,5 @@
-import torch 
+import torch
+from torch import nn
 from collections import OrderedDict
 
 def extract(model, the_dim, 
@@ -24,8 +25,8 @@ def extract(model, the_dim,
         return _MyAttr[attr]
 
     Search = {
-        'Conv1d':['out_channels', 'kernel_size'],
-        'Conv2d':['out_channels', 'kernel_size'],
+        'Conv1d':['out_channels', 'kernel_size', 'stride'],
+        'Conv2d':['out_channels', 'kernel_size', 'stride'],
         'AvgPool1d':['kernel_size', 'stride'],
         'AvgPool2d':['kernel_size', 'stride'],
         'MaxPool1d':['kernel_size', 'stride'],

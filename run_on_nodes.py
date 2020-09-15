@@ -2,7 +2,7 @@ import os
 import subprocess as sub
 import signal
 
-def go(cmd, nodes, timeout):
+def go(cmd, nodes, timeout=20*60):
     print('RUNNING CMD:')
     print(cmd)
     
@@ -67,7 +67,7 @@ def go(cmd, nodes, timeout):
 
 def clean_go(cmd, nodes, timeout=20*60):
     # run commands
-    success = go(cmd + ' > prof.out 2> prof.err', nodes, timeout)
+    success = go(cmd + ' > pred.out 2> pred.err', nodes, timeout)
 
     if not success:
         # kill 8890 ports

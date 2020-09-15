@@ -37,6 +37,7 @@ the_time = tflow_lib.profile(model, dataset, args.batch, args.epochs)
 import socket
 host = socket.gethostname()
 
-print()
-print('Host: ', host,', Time : ', the_time/1000/1000, ' s')
-print()
+if(the_time != None):
+    print()
+    print('Host: ', host,', Time : ', the_time/1000/1000, ' s')
+    print()

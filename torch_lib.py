@@ -164,19 +164,14 @@ def profile(model, train_loader, given_epochs):
                            .format(epoch+1, epochs, i+1, total_step, loss))
     
     EPOCHS = given_epochs
-    if rank == 0:
-        prof_file = 'out_torch.csv'
-        with torch.autograd.profiler.profile() as prof:
-            train(EPOCHS)
-
-        # save results
-        _save(prof.key_averages(), prof_file)
-        
-        df = get_ops(prof_file)
-        
-
-        return total_on_just(df.reset_index(), pt_ops)
     
-    else:
+    prof_file = 'out_torch.csv'
+    with torch.autograd.profiler.profile() as prof:
         train(EPOCHS)
-        return None
+
+    # save results
+    _save(prof.key_averages(), prof_file)
+
+    df = get_ops(prof_file)
+
+    return total_on_just(df.reset_index(), pt_ops)

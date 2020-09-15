@@ -7,11 +7,18 @@ import pandas as pd
 import os
 import wget
 
-import funs
+import socket
+host = socket.gethostname()
+print(host)
+ranks = {
+    'vlas-1':0,
+    'vlas-2':1,
+    'vlas-3':2
+}
+rank = ranks[host]
 
 # This can overwrite the file, don't use outside funs_tflow
 def _save(logdir, target):
-    host = funs.host
     dire = '{}/plugins/profile'.format(logdir)
     [entry] = os.listdir(dire)
 
@@ -48,20 +55,20 @@ def distribute(strategy, Model, nodes):
         'cluster': {
             'worker': workers
         },
-        'task': {'type': 'worker', 'index': funs.rank}
+        'task': {'type': 'worker', 'index': rank}
     })
 
     with strategy.scope():
         Model.create()
 
-tf_ops = ['Conv1D', 'Conv2D', 
-          'AveragePooling1D', 'AveragePooling2D', 
-          'MaxPooling1D', 'MaxPooling2D',
-          'Dense',
-          'BatchNormalization',
-          'Dropout',
-          'ReLU',
-          'tanh'
+tf_ops = ['conv1d', 'conv2d', 
+          'average_pooling1d', 'average_pooling2d', 
+          'max_pooling1d', 'max_pooling2d',
+          'dense',
+          'batch_normalization',
+          'dropout',
+          're_lu',
+          'Tanh'
          ]
 
 def check(keywords):
@@ -75,12 +82,11 @@ def total_on(df, words, column='Operation'):
     mask = df[column].apply(check(words))
     return df[mask]['Total self-time (us)'].sum()
 
-def profile(model, x, y, batch, epochs):
-    dataset = tf.data.Dataset.from_tensor_slices((x, y))
+def profile(model, dataset, batch, epochs):
     dataset = dataset.batch(batch)
     
     EPOCHS = epochs
-    if funs.rank == 0:
+    if rank == 0:
         prof_file = 'out_tflow.csv'
         logdir = '/home/ubuntu/prof_run/logs'
         os.system('rm -rf {}'.format(logdir))
@@ -93,7 +99,7 @@ def profile(model, x, y, batch, epochs):
         
         df = get_ops(prof_file)
 
-        return total_on(tf_ops)
+        return total_on(df, tf_ops)
     
     else:
         model.fit(dataset, epochs = EPOCHS)

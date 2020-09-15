@@ -3,7 +3,7 @@ import tensorflow as tf
 strategy = tf.distribute.experimental.MultiWorkerMirroredStrategy()
 
 import tflow_lib
-from models import LeNet5
+from tflow_models import LeNet5
 
 import argparse
 parser = argparse.ArgumentParser()
@@ -32,9 +32,11 @@ y = tf.keras.utils.to_categorical(y, 10)
 
 dataset = tf.data.Dataset.from_tensor_slices((x, y))
 
-the_time = tflow_lib.train(model, dataset, args.batch, args.epochs)
+the_time = tflow_lib.profile(model, dataset, args.batch, args.epochs)
 
 import socket
 host = socket.gethostname()
 
-print('Host: ', host,', Time : ', the_time, ' s')
+print()
+print('Host: ', host,', Time : ', the_time/1000/1000, ' s')
+print()

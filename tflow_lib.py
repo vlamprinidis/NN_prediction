@@ -60,6 +60,8 @@ def distribute(strategy, Model, nodes):
 
     with strategy.scope():
         Model.create()
+    
+    return Model.model
 
 tf_ops = ['conv1d', 'conv2d', 
           'average_pooling1d', 'average_pooling2d', 

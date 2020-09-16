@@ -88,22 +88,16 @@ def profile(model, dataset, batch, epochs):
     dataset = dataset.batch(batch)
     
     EPOCHS = epochs
-    if rank == 0:
-        prof_file = 'out_tflow.csv'
-        logdir = '/home/ubuntu/prof_run/logs'
-        os.system('rm -rf {}'.format(logdir))
+    prof_file = 'out_tflow.csv'
+    logdir = '/home/ubuntu/prof_run/logs'
+    os.system('rm -rf {}'.format(logdir))
 
-        with tf.profiler.experimental.Profile(logdir):
-            model.fit(dataset, epochs = EPOCHS)
-            pass
-        
-        _save(logdir, prof_file)
-        
-        df = get_ops(prof_file)
-
-        return total_on(df, tf_ops)
-    
-    else:
+    with tf.profiler.experimental.Profile(logdir):
         model.fit(dataset, epochs = EPOCHS)
-        
-        return None
+        pass
+
+    _save(logdir, prof_file)
+
+    df = get_ops(prof_file)
+
+    return total_on(df, tf_ops)

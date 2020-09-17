@@ -58,6 +58,7 @@ time = lib_tflow.profile([NAME], Model.model, dataset, steps, args.epochs)
 import numpy as np
 
 data = np.array([[
+    args.epochs, 9*512, # dataset size
     args.numf,
     args.batch,
     args.nodes,

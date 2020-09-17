@@ -14,13 +14,18 @@ sys.path.append('/home/ubuntu/profile')
 import lib
 
 parser = argparse.ArgumentParser()
-parser = lib.arg_all(parser)
+
+parser.add_argument('-numf', type = int, required = True )
+parser.add_argument('-batch', type = int, required = True, 
+                           choices = lib.batch_ls )
+parser.add_argument('-nodes', type = int, required = True,
+                           choices = lib.nodes_ls )
+parser.add_argument('-epochs', type = int, required = True)
+
 parser.add_argument('-units', type = int, required = True)
 args = parser.parse_args()
 
-DIM = args.dim
-RESULT = '__dense{}d.tflow'.format(DIM)
-NAME = 'DENSE{}D'.format(DIM)
+NAME = 'DENSE'
 
 class MyDense:
     def create(self):
@@ -28,7 +33,7 @@ class MyDense:
         model.add( 
             Dense(units = args.units, name = NAME)
         )
-        model.add( Flatten(name='FLATTEN', activation = 'tanh') )
+        model.add( Flatten(name='FLATTEN') )
         model.add( Dense(units = 10, name='FINAL_DENSE') )
         model.compile(loss = lib_tflow.loss, optimizer = lib_tflow.opt, metrics=['accuracy'])
         self.model = model
@@ -39,7 +44,7 @@ if args.nodes > 1:
 else:
     Model.create()
     
-dataset = give(DIM, args.numf, args.channels)
+dataset = give(1, args.numf, 1)
 
 time = lib_tflow.profile([NAME], Model.model, dataset, args.batch, args.epochs)
 
@@ -47,11 +52,10 @@ import numpy as np
 
 data = np.array([[
     args.numf,
-    args.channels,
     args.batch,
     args.nodes,
     args.units,
     time
 ]])
-with open('dense{}d.tflow'.format(DIM),'a') as file:
+with open('dense.tflow','a') as file:
     np.savetxt(file, data, delimiter=",", fmt="%s")

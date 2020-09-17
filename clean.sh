@@ -1,4 +1,4 @@
 #! /bin/sh
 rm ./*.out ./*.err ./*.csv ;
-rm -i *.tflow *.torch ;
-rm -i ./*/*.tflow ./*/*.torch ;
+rm -i *.tflow *.ptorch ;
+rm -i ./*/*.tflow ./*/*.ptorch ;

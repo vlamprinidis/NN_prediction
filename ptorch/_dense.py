@@ -10,14 +10,19 @@ sys.path.append('/home/ubuntu/profile')
 import lib
 
 parser = argparse.ArgumentParser()
-parser = lib.arg_all(parser)
+
+parser.add_argument('-numf', type = int, required = True )
+parser.add_argument('-batch', type = int, required = True, 
+                           choices = lib.batch_ls )
+parser.add_argument('-nodes', type = int, required = True,
+                           choices = lib.nodes_ls )
+parser.add_argument('-epochs', type = int, required = True)
+
 parser.add_argument('-units', type = int, required = True)
 args = parser.parse_args()
 
-DIM = args.dim
-
 layer = nn.Linear(
-    in_features = args.channels * args.numf ** DIM,
+    in_features = args.numf,
     out_features = args.units
 )
 
@@ -31,7 +36,7 @@ model = nn.Sequential(
     )
 )
 
-train_dataset = give(DIM, args.numf, args.channels)
+train_dataset = give(1, args.numf, 1)
 
 if args.nodes > 1:
     model, train_loader = lib_torch.distribute(model, train_dataset, args.nodes, args.batch)
@@ -49,11 +54,10 @@ import numpy as np
 
 data = np.array([[
     args.numf,
-    args.channels,
     args.batch,
     args.nodes,
     args.units,
     time
 ]])
-with open('dense{}d.ptorch'.format(DIM),'a') as file:
+with open('dense.ptorch','a') as file:
     np.savetxt(file, data, delimiter=",", fmt="%s")

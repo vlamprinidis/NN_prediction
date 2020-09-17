@@ -53,6 +53,7 @@ time = lib_torch.profile(['addmm', 'AddmmBackward'],
 import numpy as np
 
 data = np.array([[
+    args.epochs, 9*512, # dataset size
     args.numf,
     args.batch,
     args.nodes,

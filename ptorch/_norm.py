@@ -44,6 +44,7 @@ time = lib_torch.profile(['batch_norm', 'NativeBatchNormBackward'],
 import numpy as np
 
 data = np.array([[
+    args.epochs, 9*512, # dataset size
     args.numf,
     args.channels,
     args.batch,

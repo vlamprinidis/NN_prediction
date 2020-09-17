@@ -45,6 +45,7 @@ time = lib_torch.profile(['max_pool{}d'.format(DIM)],
 import numpy as np
 
 data = np.array([[
+    args.epochs, 9*512, # dataset size
     args.numf,
     args.channels,
     args.batch,

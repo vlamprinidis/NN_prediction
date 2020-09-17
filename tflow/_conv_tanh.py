@@ -43,6 +43,11 @@ else:
 
 dataset = give(DIM, args.numf, args.channels)
 
+dataset = dataset.batch(args.batch)
+
+if args.nodes > 1:
+    dataset = strategy.experimental_distribute_dataset(dataset)
+
 time = lib_tflow.profile([NAME], Model.model, dataset, args.batch, args.epochs)
 
 import numpy as np

@@ -78,7 +78,7 @@ def total_on(df, words, column='Operation'):
     return df[mask]['Total self-time (us)'].sum()
 
 def profile(tf_ops, model, dataset, batch, epochs):
-    dataset = dataset.batch(batch)
+#     dataset = dataset.batch(batch)
     
     EPOCHS = epochs
     prof_file = 'out_tflow.csv'

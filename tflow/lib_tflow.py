@@ -86,7 +86,7 @@ def profile(tf_ops, model, dataset, batch, epochs):
     os.system('rm -rf {}'.format(logdir))
 
     with tf.profiler.experimental.Profile(logdir):
-        model.fit(dataset, epochs = EPOCHS)
+        model.fit(dataset, epochs = EPOCHS, steps_per_epoch = 1024//args.batch)
         pass
 
     _save(logdir, prof_file)

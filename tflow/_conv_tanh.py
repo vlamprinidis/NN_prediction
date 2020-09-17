@@ -41,7 +41,7 @@ if args.nodes > 1:
 else:
     Model.create()
 
-# dataset = give(DIM, args.numf, args.channels)
+dataset = give(DIM, args.numf, args.channels)
 
 # dataset = dataset.batch(args.batch)
 

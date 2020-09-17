@@ -7,6 +7,9 @@ import pandas as pd
 import os
 import wget
 
+import sys
+sys.path.append('/home/ubuntu/logs')
+
 import socket
 host = socket.gethostname()
 print(host)
@@ -89,7 +92,7 @@ def profile(model, dataset, batch, epochs):
     
     EPOCHS = epochs
     prof_file = 'out_tflow.csv'
-    logdir = '/home/ubuntu/prof_run/logs'
+    logdir = '/home/ubuntu/logs'
     os.system('rm -rf {}'.format(logdir))
 
     with tf.profiler.experimental.Profile(logdir):

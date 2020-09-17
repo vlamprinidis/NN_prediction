@@ -50,7 +50,7 @@ if args.nodes > 1:
     dataset = strategy.experimental_distribute_dataset(dataset)
     print(dataset)
     for elem in dataset:
-        print(elem)
+        print(elem.shape)
 
 time = lib_tflow.profile([NAME], Model.model, dataset, args.batch, args.epochs)
 

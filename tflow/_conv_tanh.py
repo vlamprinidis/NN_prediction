@@ -48,7 +48,6 @@ print(dataset)
 
 if args.nodes > 1:
     dataset = strategy.experimental_distribute_dataset(dataset)
-    print(dataset)
     for elem in dataset:
         print(elem[0])
 

@@ -4,7 +4,7 @@ from numpy.random import RandomState as R
 seed = 42
 
 def give(dim, n, channels):
-    ds_size = 1024
+    ds_size = 5*1024
     out_size = 10
     if dim == 1:
         x = R(seed).random((ds_size, channels, n))

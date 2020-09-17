@@ -63,5 +63,5 @@ data = np.array([[
     args.units,
     time
 ]])
-with open('dense.tflow','a') as file:
+with open('dense_tanh.tflow','a') as file:
     np.savetxt(file, data, delimiter=",", fmt="%s")

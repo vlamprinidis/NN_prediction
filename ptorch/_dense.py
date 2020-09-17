@@ -11,11 +11,9 @@ import lib
 
 parser = argparse.ArgumentParser()
 
-parser.add_argument('-numf', type = int, required = True )
-parser.add_argument('-batch', type = int, required = True, 
-                           choices = lib.batch_ls )
-parser.add_argument('-nodes', type = int, required = True,
-                           choices = lib.nodes_ls )
+parser.add_argument('-numf', type = int, required = True)
+parser.add_argument('-batch', type = int, required = True)
+parser.add_argument('-nodes', type = int, required = True)
 parser.add_argument('-epochs', type = int, required = True)
 
 parser.add_argument('-units', type = int, required = True)

@@ -8,12 +8,20 @@ import os
 import wget
 
 import sys
-sys.path.append('/home/ubuntu/vms')
-import funs
+sys.path.append('/home/ubuntu/logs')
+
+import socket
+host = socket.gethostname()
+print(host)
+ranks = {
+    'vlas-1':0,
+    'vlas-2':1,
+    'vlas-3':2
+}
+rank = ranks[host]
 
 # This can overwrite the file, don't use outside funs_tflow
 def _save(logdir, target):
-    host = funs.host
     dire = '{}/plugins/profile'.format(logdir)
     [entry] = os.listdir(dire)
 
@@ -50,32 +58,39 @@ def distribute(strategy, Model, nodes):
         'cluster': {
             'worker': workers
         },
-        'task': {'type': 'worker', 'index': funs.rank}
+        'task': {'type': 'worker', 'index': rank}
     })
 
     with strategy.scope():
         Model.create()
+    
+    return Model.model
 
-def profile(model, x, y, batch, epochs):
-    dataset = tf.data.Dataset.from_tensor_slices((x, y))
+def check(keywords):
+    def find(x):
+        return any(
+            [word in x for word in keywords]
+        )
+    return find
+
+def total_on(df, words, column='Operation'):
+    mask = df[column].apply(check(words))
+    return df[mask]['Total self-time (us)'].sum()
+
+def profile(tf_ops, model, dataset, batch, epochs):
     dataset = dataset.batch(batch)
     
     EPOCHS = epochs
-#     model.fit(dataset, epochs = 1)
-    if funs.rank == 0:
-        prof_file = 'out_tflow.csv'
-        logdir = '/home/ubuntu/vms/tensorflow/logs'
-        os.system('rm -rf {}'.format(logdir))
+    prof_file = 'out_tflow.csv'
+    logdir = '/home/ubuntu/logs'
+    os.system('rm -rf {}'.format(logdir))
 
-        with tf.profiler.experimental.Profile(logdir):
-            model.fit(dataset, epochs = EPOCHS)
-            pass
-        
-        _save(logdir, prof_file)
-        
-        return prof_file
-    
-    else:
+    with tf.profiler.experimental.Profile(logdir):
         model.fit(dataset, epochs = EPOCHS)
-        
-        return None
+        pass
+
+    _save(logdir, prof_file)
+
+    df = get_ops(prof_file)
+
+    return total_on(df, tf_ops)

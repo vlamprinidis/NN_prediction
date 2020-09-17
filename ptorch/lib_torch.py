@@ -1,9 +1,16 @@
 import torch
 import csv
-import sys
-sys.path.append('/home/ubuntu/vms')
-import funs
 import pandas as pd
+
+import socket
+host = socket.gethostname()
+print(host)
+ranks = {
+    'vlas-1':0,
+    'vlas-2':1,
+    'vlas-3':2
+}
+rank = ranks[host]
 
 def conv_size_out(size_in, kern, stride):
     pad = 0
@@ -70,12 +77,12 @@ def distribute(model, train_dataset, nodes, batch):
     def cleanup():
         dist.destroy_process_group()
 
-    setup(rank = funs.rank, world_size = nodes)
+    setup(rank = rank, world_size = nodes)
 
     train_sampler = torch.utils.data.distributed.DistributedSampler(
                 train_dataset,
                 num_replicas = nodes,
-                rank = funs.rank
+                rank = rank
     )
 
     train_loader = torch.utils.data.DataLoader(
@@ -88,7 +95,20 @@ def distribute(model, train_dataset, nodes, batch):
     
     return model, train_loader
 
-def profile(model, train_loader, given_epochs):    
+def check_just(keywords):
+    def find(x):
+        return any(
+            [word == x for word in keywords]
+        )
+    return find
+
+def total_on_just(df, words):
+    column = 'CPU total (us)'
+    
+    mask = df['Name'].apply(check_just(words))
+    return df[mask][column].sum()
+
+def profile(pt_ops, model, train_loader, given_epochs):    
     criterion = torch.nn.CrossEntropyLoss()
     optimizer = torch.optim.SGD(model.parameters(), lr = 0.01)
     
@@ -107,22 +127,19 @@ def profile(model, train_loader, given_epochs):
                 loss.backward()
                 optimizer.step()
 
-                if (i+1) % 10 == 0:
+                if (i+1) % 100 == 0:
                     print ('Epoch [{}/{}], Step [{}/{}], Loss: {}' 
                            .format(epoch+1, epochs, i+1, total_step, loss))
     
     EPOCHS = given_epochs
-    #     train(1)
-    if funs.rank == 0:
-        prof_file = 'out_torch.csv'
-        with torch.autograd.profiler.profile() as prof:
-            train(EPOCHS)
-
-        # save results
-        _save(prof.key_averages(), prof_file)
-
-        return prof_file
     
-    else:
+    prof_file = 'out_torch.csv'
+    with torch.autograd.profiler.profile() as prof:
         train(EPOCHS)
-        return None
+
+    # save results
+    _save(prof.key_averages(), prof_file)
+
+    df = get_ops(prof_file)
+
+    return total_on_just(df.reset_index(), pt_ops)

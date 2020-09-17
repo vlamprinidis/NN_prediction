@@ -16,4 +16,6 @@ def give(dim, n, channels):
     y = R(seed).randint(0,out_size,ds_size)
     y = tf.keras.utils.to_categorical(y, out_size)
     
-    return x,y
+    dataset = tf.data.Dataset.from_tensor_slices((x, y))
+    
+    return dataset

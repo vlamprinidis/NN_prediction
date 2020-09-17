@@ -3,15 +3,17 @@ import torch.nn as nn
 import argparse
 
 from tor_data import give
-import funs_torch
-import funs
+import lib_torch
+
+import sys
+sys.path.append('/home/ubuntu/profile')
+import lib
 
 parser = argparse.ArgumentParser()
-parser = funs.arg_all(parser)
+parser = lib.arg_all(parser)
 args = parser.parse_args()
 
 DIM = args.dim
-RESULT = '__alone{}d.torch'.format(DIM)
 
 model = nn.Sequential(
     nn.Flatten(),
@@ -24,7 +26,7 @@ model = nn.Sequential(
 train_dataset = give(DIM, args.numf, args.channels)
 
 if args.nodes > 1:
-    model, train_loader = funs_torch.distribute(model, train_dataset, args.nodes, args.batch)
+    model, train_loader = lib_torch.distribute(model, train_dataset, args.nodes, args.batch)
 else:
     train_loader = torch.utils.data.DataLoader(
         dataset = train_dataset,
@@ -32,15 +34,17 @@ else:
         shuffle = True
     )
 
-prof = funs_torch.profile(model, train_loader, args.epochs)
+time = lib_torch.profile(['flatten'], 
+                         model, train_loader, args.epochs)
 
-if prof != None:
-    key = funs.my_key({
-        'numf':args.numf,
-        'batch':args.batch,
-        'nodes':args.nodes,
-        'channels':args.channels,
-    })
-    value = funs_torch.get_ops(prof)
-    
-    funs.update(key, value, RESULT)
+import numpy as np
+
+data = np.array([[
+    args.numf,
+    args.channels,
+    args.batch,
+    args.nodes,
+    time
+]])
+with open('flatten{}d.ptorch'.format(DIM),'a') as file:
+    np.savetxt(file, data, delimiter=",", fmt="%s")

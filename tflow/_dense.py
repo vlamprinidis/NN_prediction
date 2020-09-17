@@ -6,12 +6,15 @@ from tensorflow.keras import layers
 from tensorflow.keras.layers import Dense, Flatten
 import argparse
 from tf_data import give
-import funs_tflow
-from funs_tflow import distribute
-import funs
+import lib_tflow
+from lib_tflow import distribute
+
+import sys
+sys.path.append('/home/ubuntu/profile')
+import lib
 
 parser = argparse.ArgumentParser()
-parser = funs.arg_all(parser)
+parser = lib.arg_all(parser)
 parser.add_argument('-units', type = int, required = True)
 args = parser.parse_args()
 
@@ -25,9 +28,9 @@ class MyDense:
         model.add( 
             Dense(units = args.units, name = NAME)
         )
-        model.add( Flatten(name='FLATTEN') )
+        model.add( Flatten(name='FLATTEN', activation = 'tanh') )
         model.add( Dense(units = 10, name='FINAL_DENSE') )
-        model.compile(loss = funs_tflow.loss, optimizer = funs_tflow.opt, metrics=['accuracy'])
+        model.compile(loss = lib_tflow.loss, optimizer = lib_tflow.opt, metrics=['accuracy'])
         self.model = model
 
 Model = MyDense()
@@ -36,17 +39,19 @@ if args.nodes > 1:
 else:
     Model.create()
     
-x,y = give(DIM, args.numf, args.channels)
+dataset = give(DIM, args.numf, args.channels)
 
-prof = funs_tflow.profile(Model.model, x, y, args.batch, args.epochs)
+time = lib_tflow.profile([NAME], Model.model, dataset, args.batch, args.epochs)
 
-if prof != None:
-    key = funs.my_key({
-            'numf':args.numf,
-            'batch':args.batch,
-            'nodes':args.nodes,
-            'channels':args.channels,
-            'units':args.units,
-        })
-    value = funs_tflow.get_ops(prof)
-    funs.update(key, value, RESULT)
+import numpy as np
+
+data = np.array([[
+    args.numf,
+    args.channels,
+    args.batch,
+    args.nodes,
+    args.units,
+    time
+]])
+with open('dense{}d.tflow'.format(DIM),'a') as file:
+    np.savetxt(file, data, delimiter=",", fmt="%s")

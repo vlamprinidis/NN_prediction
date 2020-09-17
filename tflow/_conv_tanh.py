@@ -43,18 +43,14 @@ else:
 
 dataset = give(DIM, args.numf, args.channels)
 
-# dataset = dataset.batch(args.batch)
+dataset = dataset.batch(args.batch)
 
-# if args.nodes > 1:
-#     dataset = strategy.experimental_distribute_dataset(dataset)
+if args.nodes > 1:
+    dataset = strategy.experimental_distribute_dataset(dataset)
+    
+steps = 9*512//args.batch//args.nodes
 
-per_worker_batch_size = args.batch
-
-global_batch_size = per_worker_batch_size * args.nodes
-
-dataset = dataset.batch(global_batch_size)
-
-time = lib_tflow.profile([NAME], Model.model, dataset, args.batch//args.nodes, args.epochs)
+time = lib_tflow.profile([NAME], Model.model, dataset, steps, args.epochs)
 
 import numpy as np
 

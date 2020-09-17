@@ -77,14 +77,14 @@ def total_on(df, words, column='Operation'):
     mask = df[column].apply(check(words))
     return df[mask]['Total self-time (us)'].sum()
 
-def profile(tf_ops, model, dataset, batch, epochs):    
+def profile(tf_ops, model, dataset, steps, epochs):    
     EPOCHS = epochs
     prof_file = 'out_tflow.csv'
     logdir = '/home/ubuntu/logs'
     os.system('rm -rf {}'.format(logdir))
 
     with tf.profiler.experimental.Profile(logdir):
-        model.fit(dataset, epochs = EPOCHS)
+        model.fit(dataset, epochs = EPOCHS, steps_per_epoch = steps)
         pass
 
     _save(logdir, prof_file)

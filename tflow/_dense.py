@@ -31,7 +31,7 @@ class MyDense:
     def create(self):
         model = Sequential()
         model.add( 
-            Dense(units = args.units, name = NAME)
+            Dense(units = args.units, name = NAME, activation = 'tanh')
         )
         model.add( Flatten(name='FLATTEN') )
         model.add( Dense(units = 10, name='FINAL_DENSE') )
@@ -46,7 +46,14 @@ else:
     
 dataset = give(1, args.numf, 1)
 
-time = lib_tflow.profile([NAME], Model.model, dataset, args.batch, args.epochs)
+dataset = dataset.batch(args.batch)
+
+if args.nodes > 1:
+    dataset = strategy.experimental_distribute_dataset(dataset)
+    
+steps = 9*512//args.batch//args.nodes
+
+time = lib_tflow.profile([NAME], Model.model, dataset, steps, args.epochs)
 
 import numpy as np
 

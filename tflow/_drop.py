@@ -5,7 +5,7 @@ from tensorflow.keras.models import Sequential
 from tensorflow.keras import layers  
 from tensorflow.keras.layers import Dense, Flatten
 import argparse
-from tf_data import give
+from tf_data import give, ds_size
 import lib_tflow
 from lib_tflow import distribute
 
@@ -45,7 +45,7 @@ dataset = dataset.batch(args.batch)
 if args.nodes > 1:
     dataset = strategy.experimental_distribute_dataset(dataset)
     
-steps = 9*512//args.batch//args.nodes
+steps = ds_size//args.batch//args.nodes
 
 the_typs = ['RandomUniform']
 
@@ -54,7 +54,7 @@ time = lib_tflow.profile(the_typs, None, Model.model, dataset, steps, args.epoch
 import numpy as np
 
 data = np.array([[
-    args.epochs, 9*512, # dataset size
+    args.epochs, ds_size, # dataset size
     args.numf,
     args.channels,
     args.batch,

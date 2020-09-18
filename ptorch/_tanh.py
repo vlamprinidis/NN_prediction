@@ -3,6 +3,8 @@ import torch.nn as nn
 import argparse
 
 from tor_data import give
+import tor_data
+
 import lib_torch
 
 import sys
@@ -42,7 +44,7 @@ time = lib_torch.profile(['tanh'],
 import numpy as np
 
 data = np.array([[
-    args.epochs, 9*512, # dataset size
+    args.epochs, tor_data.ds_size, # dataset size
     args.numf,
     args.channels,
     args.batch,

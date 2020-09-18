@@ -68,7 +68,7 @@ for nodes in [3,2,1]:
             for channels in [1,3]:
                 opt_all = opt['all'](numf=numf, b=batch, nodes=nodes, e=epochs, ch=channels, dim=dim)
 
-                # Batch Normalization, Relu, Tanh, Alone 2d
+                # Batch Normalization, Relu, Tanh, Flatten 2d
                 for file in ['_norm.py', '_relu.py', '_tanh.py', '_flatten.py']:
                     cmd = FRAME(file = file,
                                 p1 = opt_all,
@@ -82,6 +82,16 @@ for nodes in [3,2,1]:
             # Dense
             for units in [16, 32, 64, 128]:
                 cmd = FRAME(file = '_dense.py',
+                            p1 = opt['dense'](numf=numf, b=batch, nodes=nodes, e=epochs, units = units),
+                            p2 = '')
+                clean_go(cmd, nodes)
+
+for nodes in [3,2,1]:
+    for numf in [16,32,64,128,256,512,1024,2048,4096]:
+        for batch in [32, 64, 256, 512]:
+            # Dense
+            for units in [5, 10, 16, 32, 64, 128]:
+                cmd = FRAME(file = '_final_dense.py',
                             p1 = opt['dense'](numf=numf, b=batch, nodes=nodes, e=epochs, units = units),
                             p2 = '')
                 clean_go(cmd, nodes)

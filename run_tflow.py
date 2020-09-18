@@ -22,11 +22,11 @@ for nodes in [3,2,1]:
             for channels in [1,3]:
                 opt_all = opt['all'](numf=numf, b=batch, nodes=nodes, e=epochs, ch=channels, dim=dim)
 
-                # Conv_Tanh 2d
+                # Conv 2d
                 for kernel in [2,4,8]:
                     for filters in [1,2,4,8,16]:
                         for stride in [1,2,4]:
-                            cmd = FRAME(file = '_conv_tanh.py', 
+                            cmd = FRAME(file = '_conv.py', 
                                  p1 = opt_all,
                                  p2 = opt['conv'](kernel=kernel, filters=filters, stride=stride))
                             clean_go(cmd, nodes)
@@ -68,22 +68,32 @@ for nodes in [3,2,1]:
             for channels in [1,3]:
                 opt_all = opt['all'](numf=numf, b=batch, nodes=nodes, e=epochs, ch=channels, dim=dim)
 
-                # Batch Normalization 2d
-                cmd = FRAME(file = '_norm.py',
-                            p1 = opt_all,
+                # Batch Normalization, Relu, Tanh 2d
+                for file in ['_norm.py', '_relu.py', '_tanh.py']:
+                    cmd = FRAME(file = file,
+                                p1 = opt_all,
+                                p2 = '')
+                    clean_go(cmd, nodes)
+
+for nodes in [3,2,1]:
+    for numf in [16,32,64,128,256,512,1024,2048,4096]:
+        for batch in [32, 64, 256, 512]:
+            # Dense
+            for units in [16, 32, 64, 128]:
+                cmd = FRAME(file = '_dense.py',
+                            p1 = opt['dense'](numf=numf, b=batch, nodes=nodes, e=epochs, units = units),
                             p2 = '')
                 clean_go(cmd, nodes)
 
 for nodes in [3,2,1]:
     for numf in [16,32,64,128,256,512,1024,2048,4096]:
         for batch in [32, 64, 256, 512]:
-            # Dense_Tanh
-            for units in [16, 32, 64, 128]:
-                cmd = FRAME(file = '_dense_tanh.py',
+            # Dense
+            for units in [5, 10, 15, 20, 25]:
+                cmd = FRAME(file = '_final_dense.py',
                             p1 = opt['dense'](numf=numf, b=batch, nodes=nodes, e=epochs, units = units),
                             p2 = '')
                 clean_go(cmd, nodes)
-
 
 # dim = 1
 
@@ -139,10 +149,11 @@ for nodes in [3,2,1]:
 #             for channels in [1,3]:
 #                 opt_all = opt['all'](numf=numf, b=batch, nodes=nodes, e=epochs, ch=channels, dim=dim)
 
-#                 # Batch Normalization 1D
-#                 cmd = FRAME(file = '_norm.py',
-#                             p1 = opt_all,
-#                             p2 = '')
-#                 clean_go(cmd, nodes)
+#                     # Batch Normalization, Relu, Tanh 1d
+#                     for file in ['_norm.py', '_relu.py', '_tanh.py']:
+#                         cmd = FRAME(file = file,
+#                                     p1 = opt_all,
+#                                     p2 = '')
+#                         clean_go(cmd, nodes)
 
 

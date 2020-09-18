@@ -1,9 +1,31 @@
+import lib
+from lib import detuple
+
 import torch
 from torch import nn
 from collections import OrderedDict
 
 def extract(model, the_dim, 
                       the_batch, the_numf, the_channels):
+    def MyName(name):
+        name_map = {
+            'Conv1d': 'conv1d', 'Conv2d':'conv2d',
+            'AvgPool1d': 'avg1d', 'AvgPool2d': 'avg2d',
+            'MaxPool1d': 'max1d', 'MaxPool2d': 'max2d',
+            'BatchNorm1d': 'norm1d', 'BatchNorm2d': 'norm2d',
+            'Dropout': 'drop1d', 'Dropout2d': 'drop2d',
+            'ReLU': [None, 'relu1d', 'relu2d'],
+            'Tanh': [None, 'tanh1d', 'tanh2d'],
+            'Flatten': [None, 'flatten1d', 'flatten2d'],
+            'Linear': 'dense'
+        }
+        if name not in name_map.keys():
+            return name
+        
+        if name in ['ReLU', 'Tanh', 'Flatten']:
+            return name_map[name][the_dim]
+        
+        return name_map[name]
     
     def MyAttr(attr, class_name):
         _MyAttr = {
@@ -13,12 +35,8 @@ def extract(model, the_dim,
             'out_channels':'filters',
             'out_features':'units'
         }
-        if ((class_name == 'AvgPool1d') |
-            (class_name == 'AvgPool2d') |
-            (class_name == 'MaxPool1d') |
-            (class_name == 'MaxPool2d')):
+        if class_name in ['AvgPool1d', 'AvgPool2d', 'MaxPool1d', 'MaxPool2d']:
                 _MyAttr['kernel_size'] = 'pool'
-        
         else:
             _MyAttr['kernel_size'] = 'kernel'
         
@@ -75,7 +93,7 @@ def extract(model, the_dim,
     def give_info(layer, inp_info):
         Info = {}
         name = layer.__class__.__name__
-        Info['name'] = name
+        Info['name'] = MyName(name)
         
         assert(name == inp_info['name'])
         
@@ -99,8 +117,10 @@ def extract(model, the_dim,
         if name in Search.keys():
             search = Search[name]
             for attr in search:
-                Info[MyAttr(attr, name)] = layer.__dict__[attr]
+                Info[MyAttr(attr, name)] = detuple(layer.__dict__[attr])
         
         return Info
 
     return [give_info(layer, inp_info) for layer, inp_info in zip(model, summ_dct.values())]
+
+    

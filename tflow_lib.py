@@ -66,15 +66,17 @@ def distribute(strategy, Model, nodes):
     
     return Model.model
 
-tf_ops = ['conv1d', 'conv2d', 
-          'average_pooling1d', 'average_pooling2d', 
-          'max_pooling1d', 'max_pooling2d',
-          'dense',
-          'batch_normalization',
-          'dropout',
-          're_lu',
-          'Tanh'
-         ]
+tf_typ_op = [
+    (['AvgPool'],None),
+    (['Conv2D', '_FusedConv2D', 'Conv2DBackpropFilter'],None),
+    (['MatMul'],['dense']),
+    (['RandomUniform'],None),
+    (['_FusedMatMul', 'MatMul'],['FINAL_DENSE']),
+    (['MaxPool'],None),
+    (['SquaredDifference', 'Mean', 'FusedBatchNormV3', 'FusedBatchNormGradV3'],None),
+    (['Relu'],None),
+    (['Tanh'],None)
+]
 
 def check(keywords):
     def find(x):
@@ -83,24 +85,41 @@ def check(keywords):
         )
     return find
 
-def total_on(df, words, column='Operation'):
-    mask = df[column].apply(check(words))
-    return df[mask]['Total self-time (us)'].sum()
+def check_just(keywords):
+    def find(x):
+        return any(
+            [word == x for word in keywords]
+        )
+    return find
 
-def profile(model, dataset, batch, epochs):
-    dataset = dataset.batch(batch)
+def total_on(_df, words_typ = None, words_op = None):  
     
+    df = _df
+    
+    if words_typ != None:
+        mask = df['Type'].apply(check_just(words_typ))
+        df = df[mask]
+    
+    if words_op != None:
+        mask = df['Operation'].apply(check(words_op))
+        df = df[mask]
+    
+    return df['Total self-time (us)'].sum()
+
+
+def profile(model, dataset, steps, epochs):    
     EPOCHS = epochs
     prof_file = 'out_tflow.csv'
     logdir = '/home/ubuntu/logs'
     os.system('rm -rf {}'.format(logdir))
 
     with tf.profiler.experimental.Profile(logdir):
-        model.fit(dataset, epochs = EPOCHS, steps_per_epoch=1)
+        model.fit(dataset, epochs = EPOCHS, steps_per_epoch=steps)
         pass
 
     _save(logdir, prof_file)
 
     df = get_ops(prof_file)
 
-    return total_on(df, tf_ops)
+    return sum([total_on(df,typ,op) for typ,op in tf_typ_op])
+

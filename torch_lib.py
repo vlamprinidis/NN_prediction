@@ -96,7 +96,7 @@ def distribute(model, train_dataset, nodes, batch):
     return model, train_loader
 
 pt_ops = [
-    'addmm', 'mm',
+    'addmm',
     'AddmmBackward',
 
     'conv1d', 

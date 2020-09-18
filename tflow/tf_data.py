@@ -2,10 +2,9 @@ import tensorflow as tf
 from numpy.random import RandomState as R
 
 seed = 42
+ds_size = 9*512
 
-def give(dim, n, channels):
-    ds_size = 9*512
-    out_size = 10
+def give(dim, n, channels, out_size=10):
     if dim == 1:
         x = R(seed).random((ds_size, n, channels))
         x = x.reshape(x.shape[0], n, channels)

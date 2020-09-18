@@ -14,31 +14,33 @@ sys.path.append('/home/ubuntu/profile')
 import lib
 
 parser = argparse.ArgumentParser()
-parser = lib.arg_all(parser)
-parser.add_argument('-drop', type = float, required = True)
+
+parser.add_argument('-numf', type = int, required = True)
+parser.add_argument('-batch', type = int, required = True)
+parser.add_argument('-nodes', type = int, required = True)
+parser.add_argument('-epochs', type = int, required = True)
+
+parser.add_argument('-units', type = int, required = True)
 args = parser.parse_args()
 
-DIM = args.dim
-RESULT = '__drop{}d.tflow'.format(DIM)
-
-class Drop:
+class MyDense:
     def create(self):
         model = Sequential()
         model.add( 
-            layers.Dropout(rate = args.drop)
+            Dense(units = args.units)
         )
         model.add( Flatten(name='FLATTEN') )
         model.add( Dense(units = 10, name='FINAL_DENSE') )
         model.compile(loss = lib_tflow.loss, optimizer = lib_tflow.opt, metrics=['accuracy'])
         self.model = model
 
-Model = Drop()
+Model = MyDense()
 if args.nodes > 1:
     distribute(strategy, Model, args.nodes)
 else:
     Model.create()
-
-dataset = give(DIM, args.numf, args.channels)
+    
+dataset = give(1, args.numf, 1)
 
 dataset = dataset.batch(args.batch)
 
@@ -47,21 +49,20 @@ if args.nodes > 1:
     
 steps = 9*512//args.batch//args.nodes
 
-the_typs = ['RandomUniform']
+the_typs = ['MatMul']
+the_ops = ['dense']
 
-time = lib_tflow.profile(the_typs, None, Model.model, dataset, steps, args.epochs)
+time = lib_tflow.profile(the_typs, the_ops, Model.model, dataset, steps, args.epochs)
 
 import numpy as np
 
 data = np.array([[
     args.epochs, 9*512, # dataset size
     args.numf,
-    args.channels,
     args.batch,
     args.nodes,
-    args.drop,
+    args.units,
     time
 ]])
-with open('drop{}d.tflow'.format(DIM),'a') as file:
+with open('dense.tflow','a') as file:
     np.savetxt(file, data, delimiter=",", fmt="%s")
-    

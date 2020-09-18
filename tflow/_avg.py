@@ -49,7 +49,9 @@ if args.nodes > 1:
     
 steps = 9*512//args.batch//args.nodes
 
-time = lib_tflow.profile([NAME], Model.model, dataset, steps, args.epochs)
+the_typs = ['AvgPool']
+
+time = lib_tflow.profile(the_typs, None, Model.model, dataset, steps, args.epochs)
 
 import numpy as np
 

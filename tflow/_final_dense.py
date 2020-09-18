@@ -23,26 +23,21 @@ parser.add_argument('-epochs', type = int, required = True)
 parser.add_argument('-units', type = int, required = True)
 args = parser.parse_args()
 
-NAME = 'DENSE'
-
-class MyDense:
+class FinalDense:
     def create(self):
         model = Sequential()
-        model.add( 
-            Dense(units = args.units, name = NAME, activation = 'tanh')
-        )
         model.add( Flatten(name='FLATTEN') )
-        model.add( Dense(units = 10, name='FINAL_DENSE') )
+        model.add( Dense(units = args.units, name='FINAL_DENSE') )
         model.compile(loss = lib_tflow.loss, optimizer = lib_tflow.opt, metrics=['accuracy'])
         self.model = model
 
-Model = MyDense()
+Model = FinalDense()
 if args.nodes > 1:
     distribute(strategy, Model, args.nodes)
 else:
     Model.create()
     
-dataset = give(1, args.numf, 1)
+dataset = give(1, args.numf, 1, out_size = args.units)
 
 dataset = dataset.batch(args.batch)
 
@@ -51,7 +46,10 @@ if args.nodes > 1:
     
 steps = 9*512//args.batch//args.nodes
 
-time = lib_tflow.profile([NAME], Model.model, dataset, steps, args.epochs)
+the_typs = ['_FusedMatMul', 'MatMul']
+the_ops = ['FINAL_DENSE']
+
+time = lib_tflow.profile(the_typs, the_ops, Model.model, dataset, steps, args.epochs)
 
 import numpy as np
 
@@ -63,5 +61,5 @@ data = np.array([[
     args.units,
     time
 ]])
-with open('dense_tanh.tflow','a') as file:
+with open('final_dense.tflow','a') as file:
     np.savetxt(file, data, delimiter=",", fmt="%s")

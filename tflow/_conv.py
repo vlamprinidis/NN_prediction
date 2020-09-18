@@ -28,7 +28,7 @@ class Conv:
         model = Sequential()
         model.add( 
             conv(filters = args.filters, kernel_size = args.kernel, strides = args.stride,
-                                             name = NAME, activation = 'tanh')
+                                             name = NAME)
         )
         model.add( Flatten(name='FLATTEN') )
         model.add( Dense(units = 10, name='FINAL_DENSE') )
@@ -50,7 +50,10 @@ if args.nodes > 1:
     
 steps = 9*512//args.batch//args.nodes
 
-time = lib_tflow.profile([NAME], Model.model, dataset, steps, args.epochs)
+the_typs = ['Conv2D'] if DIM == 1 else ['_FusedConv2D']
+the_typs += ['Conv2DBackpropFilter']
+
+time = lib_tflow.profile(the_typs, None, Model.model, dataset, steps, args.epochs)
 
 import numpy as np
 
@@ -65,6 +68,6 @@ data = np.array([[
     args.filters,
     time
 ]])
-with open('conv{}d_tanh.tflow'.format(DIM),'a') as file:
+with open('conv{}d.tflow'.format(DIM),'a') as file:
     np.savetxt(file, data, delimiter=",", fmt="%s")
     

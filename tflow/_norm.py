@@ -18,14 +18,12 @@ parser = lib.arg_all(parser)
 args = parser.parse_args()
 
 DIM = args.dim
-RESULT = '__norm{}d.tflow'.format(DIM)
-NAME = 'NORM{}D'.format(DIM)
 
 class Norm:
     def create(self):
         model = Sequential()
         model.add( 
-            layers.BatchNormalization(name = NAME)
+            layers.BatchNormalization()
         )
         model.add( Flatten(name='FLATTEN') )
         model.add( Dense(units = 10, name='FINAL_DENSE') )
@@ -47,7 +45,10 @@ if args.nodes > 1:
     
 steps = 9*512//args.batch//args.nodes
 
-time = lib_tflow.profile([NAME], Model.model, dataset, steps, args.epochs)
+the_typs, the_ops = (['SquaredDifference', 'Mean'], None) if DIM == 1 else (
+    ['FusedBatchNormV3', 'FusedBatchNormGradV3'], None)
+
+time = lib_tflow.profile(the_typs, the_ops, Model.model, dataset, steps, args.epochs)
 
 import numpy as np
 

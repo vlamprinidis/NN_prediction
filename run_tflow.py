@@ -12,7 +12,7 @@ tf_files = ['_avg.py', '_conv_tanh.py', '_dense_tanh.py', '_drop.py', '_max.py',
 
 # TensorFlow
 FRAME = '/home/ubuntu/.env/bin/python3 /home/ubuntu/profile/tflow/{file} {p1} {p2}'.format
-epochs = 5
+epochs = 2
 
 dim = 2
 

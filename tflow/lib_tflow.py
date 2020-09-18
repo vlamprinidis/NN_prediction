@@ -73,11 +73,28 @@ def check(keywords):
         )
     return find
 
-def total_on(df, words, column='Operation'):
-    mask = df[column].apply(check(words))
-    return df[mask]['Total self-time (us)'].sum()
+def check_just(keywords):
+    def find(x):
+        return any(
+            [word == x for word in keywords]
+        )
+    return find
 
-def profile(tf_ops, model, dataset, steps, epochs):    
+def total_on(_df, words_typ = None, words_op = None):    
+    
+    df = _df
+    
+    if words_typ != None:
+        mask = df['Type'].apply(check_just(words_typ))
+        df = df[mask]
+    
+    if words_op != None:
+        mask = df['Operation'].apply(check(words_op))
+        df = df[mask]
+    
+    return df['Total self-time (us)'].sum()
+
+def profile(tf_type, tf_operation, model, dataset, steps, epochs):    
     EPOCHS = epochs
     prof_file = 'out_tflow.csv'
     logdir = '/home/ubuntu/logs'
@@ -91,4 +108,4 @@ def profile(tf_ops, model, dataset, steps, epochs):
 
     df = get_ops(prof_file)
 
-    return total_on(df, tf_ops)
+    return total_on(df, words_typ = tf_type, words_op = tf_operation)

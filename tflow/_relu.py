@@ -15,24 +15,22 @@ import lib
 
 parser = argparse.ArgumentParser()
 parser = lib.arg_all(parser)
-parser.add_argument('-drop', type = float, required = True)
 args = parser.parse_args()
 
 DIM = args.dim
-RESULT = '__drop{}d.tflow'.format(DIM)
 
-class Drop:
+class Relu:
     def create(self):
         model = Sequential()
         model.add( 
-            layers.Dropout(rate = args.drop)
+            layers.ReLU()
         )
         model.add( Flatten(name='FLATTEN') )
         model.add( Dense(units = 10, name='FINAL_DENSE') )
         model.compile(loss = lib_tflow.loss, optimizer = lib_tflow.opt, metrics=['accuracy'])
         self.model = model
 
-Model = Drop()
+Model = Relu()
 if args.nodes > 1:
     distribute(strategy, Model, args.nodes)
 else:
@@ -47,7 +45,7 @@ if args.nodes > 1:
     
 steps = 9*512//args.batch//args.nodes
 
-the_typs = ['RandomUniform']
+the_typs = ['Relu']
 
 time = lib_tflow.profile(the_typs, None, Model.model, dataset, steps, args.epochs)
 
@@ -59,9 +57,8 @@ data = np.array([[
     args.channels,
     args.batch,
     args.nodes,
-    args.drop,
     time
 ]])
-with open('drop{}d.tflow'.format(DIM),'a') as file:
+with open('relu{}d.tflow'.format(DIM),'a') as file:
     np.savetxt(file, data, delimiter=",", fmt="%s")
     

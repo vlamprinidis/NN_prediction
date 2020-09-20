@@ -1,12 +1,10 @@
-logs_tf/
-log_tor/
 *.ipynb_checkpoints/
 *.csv
 *.pyc
 *.out
 *.err
-pytorch/mnist_data/
 *.tflow
-*.torch
-*.tflow_db
-*.torch_db
+./*/*.tflow
+*.ptorch
+./*/*.ptorch
+stats

@@ -136,3 +136,10 @@ def total_time(reg_map, features, nodes):
         total += current
     
     return total
+
+def predict(reg_map, features, epochs, ds, nodes, batch):
+    steps = epochs*max(1,ds/nodes/batch)
+    
+    return steps*total_time(reg_map, features, nodes)/1000/1000
+
+

@@ -2,10 +2,8 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
-class LeNet5(nn.Module):
-    def __init__(self):
-        super(LeNet5, self).__init__()
-        
+class LeNet5():
+    def create(self):
         self.model = nn.Sequential(            
             nn.Conv2d(in_channels=1, out_channels=6, kernel_size=5, stride=1),
             nn.Tanh(),
@@ -20,10 +18,7 @@ class LeNet5(nn.Module):
             nn.Tanh(),
             nn.Linear(in_features=84, out_features=10)
         )
-
-    def forward(self, x):
-        logits = self.model(x)
-        probs = F.softmax(logits, dim=1)
-        return logits, probs
+        
+        return self.model
     
     

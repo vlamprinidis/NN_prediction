@@ -15,7 +15,7 @@ parser.add_argument('-batch', type = int, required = True)
 parser.add_argument('-epochs', type = int, required = True)
 args = parser.parse_args()
 
-model = LeNet5().model
+model = LeNet5().create()
 # transforms = transforms.Compose([transforms.Resize((32, 32)),
 #                                  transforms.ToTensor()])
 # train_dataset = datasets.MNIST(root='mnist_data', 

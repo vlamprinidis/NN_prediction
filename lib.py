@@ -13,23 +13,34 @@ from math import sqrt
 def detuple(elem):
     return elem[0] if isinstance(elem, tuple) else elem
 
-def proc(_arr, isdense = 0):
+def proc(_arr, nodes, isdense = 0):
     def mymax(x):
         return max(1,x)
+    
+    nodes_col = 5 - isdense
 
-    arr = _arr.copy()
+    arr = _arr[_arr[:,nodes_col] == nodes].copy()
     
     epochs = arr[:,0]
     ds = arr[:,1]
     batch = arr[:,4 - isdense]
-    nodes = arr[:,5 - isdense]
+    nodes = arr[:,nodes_col]
     steps = epochs*np.vectorize(mymax)(ds/nodes/batch)
     
     arr[:,-1] = arr[:,-1]/steps
     
-    return arr[:,2:-1], arr[:,-1]
+    proc_arr = np.delete(arr, nodes_col, 1) # remove nodes column
     
-def the_train(x, y):
+#     return arr[:,2:-1], arr[:,-1]
+    return proc_arr[:,2:-1], proc_arr[:,-1]
+    
+def the_train(x_train, y_train):
+    model = RandomForestRegressor()
+    model.fit(x_train, y_train)
+    
+    return model 
+
+def the_score_train(x, y):
     model = RandomForestRegressor()
     
     x_train, x_test, y_train, y_test = train_test_split(x, y, test_size=0.1)
@@ -48,10 +59,12 @@ def the_train(x, y):
     
     return model
 
-class Reg:
-    def __init__(self, fw):
+class Reg_N:
+    def __init__(self, fw, nodes):
         assert fw in ['tflow','ptorch']
+        assert nodes in [1,2,3]
         
+        self.nodes = nodes
         self.reg_map = {}
         names = ['conv1d', 'conv2d', 
             'avg1d', 'avg2d', 
@@ -73,12 +86,12 @@ class Reg:
                 continue
             
             isdense = 1 if name in ['dense', 'final_dense'] else 0
-            
-            x,y = proc(arr, isdense=isdense)
+
+            x,y = proc(arr, nodes, isdense=isdense)
             print(name)
             self.reg_map[name] = the_train(x,y)
 
-def total_time(reg_map, features, nodes):
+def total_time(reg_map, features):
     total = 0
     for layer in features:
         name = layer['name']
@@ -91,7 +104,7 @@ def total_time(reg_map, features, nodes):
                 layer['numf'],
                 layer['channels'],
                 layer['batch'],
-                nodes,
+#                 nodes,
                 detuple(layer['kernel']),
                 detuple(layer['stride']),
                 layer['filters']
@@ -102,7 +115,7 @@ def total_time(reg_map, features, nodes):
                 layer['numf'],
                 layer['channels'],
                 layer['batch'],
-                nodes,
+#                 nodes,
                 detuple(layer['pool']),
                 detuple(layer['stride'])
             ]).reshape(1,-1)
@@ -112,7 +125,7 @@ def total_time(reg_map, features, nodes):
                 layer['numf'],
                 layer['channels'],
                 layer['batch'],
-                nodes,
+#                 nodes,
             ]).reshape(1,-1)
         
         elif name in ['drop1d', 'drop2d']:
@@ -120,7 +133,7 @@ def total_time(reg_map, features, nodes):
                 layer['numf'],
                 layer['channels'],
                 layer['batch'],
-                nodes,
+#                 nodes,
                 layer['drop']
             ]).reshape(1,-1)
         
@@ -128,7 +141,7 @@ def total_time(reg_map, features, nodes):
             elem = np.array([
                 layer['numf'],
                 layer['batch'],
-                nodes,
+#                 nodes,
                 layer['units']
             ]).reshape(1,-1)
         
@@ -137,9 +150,9 @@ def total_time(reg_map, features, nodes):
     
     return total
 
-def predict(reg_map, features, epochs, ds, nodes, batch):
-    steps = epochs*max(1,ds/nodes/batch)
+def predict(reg, features, epochs, ds, batch):
+    steps = epochs*max(1,ds/reg.nodes/batch)
     
-    return steps*total_time(reg_map, features, nodes)/1000/1000
+    return steps*total_time(reg.reg_map, features)/1000/1000
 
 

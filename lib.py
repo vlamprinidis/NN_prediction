@@ -24,14 +24,12 @@ def proc(_arr, nodes, isdense = 0):
     epochs = arr[:,0]
     ds = arr[:,1]
     batch = arr[:,4 - isdense]
-    nodes = arr[:,nodes_col]
-    steps = epochs*np.vectorize(mymax)(ds/nodes/batch)
+    steps = epochs*np.vectorize(mymax)(ds/batch)
     
     arr[:,-1] = arr[:,-1]/steps
     
     proc_arr = np.delete(arr, nodes_col, 1) # remove nodes column
     
-#     return arr[:,2:-1], arr[:,-1]
     return proc_arr[:,2:-1], proc_arr[:,-1]
     
 def the_train(x_train, y_train):
@@ -59,6 +57,7 @@ def the_score_train(x, y):
     
     return model
 
+# READ FROM ALL NODE FILES!!!
 class Reg_N:
     def __init__(self, fw, nodes):
         assert fw in ['tflow','ptorch']

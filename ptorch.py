@@ -16,7 +16,7 @@ def extract(model, the_dim,
             'ReLU': [None, 'relu1d', 'relu2d'],
             'Tanh': [None, 'tanh1d', 'tanh2d'],
             'Flatten': [None, 'flatten1d', 'flatten2d'],
-            'Linear': 'dense'
+            'Linear': 'final_dense'
         }
         if name not in name_map.keys():
             return name

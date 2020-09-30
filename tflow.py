@@ -57,6 +57,9 @@ def extract(model, the_dim,
         else:
             Info['name'] = MyName(name)
         
+        if name == 'Add':
+            return Info
+        
         inp = layer.input.shape
         
         Info['batch'] = inp[0]
@@ -82,4 +85,9 @@ def extract(model, the_dim,
         
         return Info
     
-    return [give_info(layer) for layer in model.layers]
+    layers = [give_info(layer) for layer in model.layers]
+    
+    assert layers[-1]['name'] == 'dense'
+    layers[-1]['name'] = 'final_dense'
+    
+    return layers

@@ -8,3 +8,6 @@
 *.ptorch
 ./*/*.ptorch
 stats
+./stats
+/stats/
+/stats

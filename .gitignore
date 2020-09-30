@@ -3,11 +3,6 @@
 *.pyc
 *.out
 *.err
-*.tflow
-./*/*.tflow
-*.ptorch
-./*/*.ptorch
-stats
-./stats
-/stats/
-/stats
+**.tflow
+**.ptorch
+stats/**

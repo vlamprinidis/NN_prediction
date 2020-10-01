@@ -2,7 +2,7 @@ import torch
 from numpy.random import RandomState as R
 
 seed = 42
-ds_size = 9*512
+ds_size = 9*512*2
 
 def give(dim, n, channels, out_size = 10):
     if dim == 1:

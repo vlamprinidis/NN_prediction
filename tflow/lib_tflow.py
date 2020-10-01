@@ -99,9 +99,11 @@ def profile(tf_type, tf_operation, model, dataset, steps, epochs):
     prof_file = 'out_tflow.csv'
     logdir = '/home/ubuntu/logs'
     os.system('rm -rf {}'.format(logdir))
+    
+    import math
 
     with tf.profiler.experimental.Profile(logdir):
-        model.fit(dataset, epochs = EPOCHS, steps_per_epoch = steps)
+        model.fit(dataset, epochs = EPOCHS, steps_per_epoch = math.floor(steps))
         pass
 
     _save(logdir, prof_file)

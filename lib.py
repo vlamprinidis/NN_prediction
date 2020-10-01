@@ -2,9 +2,17 @@ import numpy as np
 import os
 
 from sklearn import model_selection
-from sklearn.ensemble import RandomForestRegressor
+
 from sklearn.linear_model import LinearRegression
+from sklearn.linear_model import Ridge
+from sklearn.linear_model import Lasso
+from sklearn.linear_model import ElasticNet
+
+from sklearn.neighbors import KNeighborsRegressor
 from sklearn.tree import DecisionTreeRegressor
+from sklearn.svm import SVR
+from sklearn.ensemble import RandomForestRegressor
+
 from sklearn.metrics import r2_score
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import mean_squared_error
@@ -24,7 +32,8 @@ def proc(_arr, nodes, isdense = 0):
     epochs = arr[:,0]
     ds = arr[:,1]
     batch = arr[:,4 - isdense]
-    steps = epochs*np.vectorize(mymax)(ds/batch)
+    nodes = arr[:,nodes_col]
+    steps = epochs*np.vectorize(mymax)(ds/batch/nodes)
     
     arr[:,-1] = arr[:,-1]/steps
     
@@ -39,25 +48,45 @@ def the_train(x_train, y_train):
     return model 
 
 def the_score_train(x, y):
-    model = RandomForestRegressor()
+#     model = RandomForestRegressor()
     
-    x_train, x_test, y_train, y_test = train_test_split(x, y, test_size=0.1)
-    model.fit(x_train, y_train)
-    print('Model: {}'.format(model))
+    for model in [LinearRegression(), Ridge(), Lasso(), ElasticNet(), 
+                  KNeighborsRegressor(), DecisionTreeRegressor(), SVR(), RandomForestRegressor()]:
     
-    r2 = model.score(x_test, y_test)
-    print('R^2 Score: {}'.format(r2))
-    
-    y_true = y
-    y_pred = model.predict(x)
-    rmse = sqrt(mean_squared_error(y_true, y_pred))
-    print('Root Mean Squared Error: {} ms'.format(rmse/1000))
-    
-    print()
+        x_train, x_test, y_train, y_test = train_test_split(x, y, test_size=0.2)
+        model.fit(x_train, y_train)
+        print('Model: {}'.format(model))
+
+        r2 = model.score(x_test, y_test)
+        print('R^2 Score: {}'.format(r2))
+
+        y_true = y
+        y_pred = model.predict(x)
+        rmse = sqrt(mean_squared_error(y_true, y_pred))
+        print('Root Mean Squared Error: {} ms'.format(rmse/1000))
+
+        print()
     
     return model
 
-# READ FROM ALL NODE FILES!!!
+def the_name(name):
+    dct = {
+        'conv2d':'Convolutional 2D',
+        'max2d':'Max Pooling 2D',
+        'avg2d':'Average Pooling 2D',
+        'dense':'Fully Connected 2D', 'final_dense':'Fully Connected 2D',
+        'drop2d':'Dropout 2D',
+        'norm2d':'Batch Normalization',
+        'relu2d':'ReLU 2D',
+        'tanh2d':'Tanh 2D'
+    }
+    
+    if name in dct.keys():
+        return dct[name]
+    else:
+        return name
+
+
 class Reg_N:
     def __init__(self, fw, nodes):
         assert fw in ['tflow','ptorch']
@@ -78,17 +107,19 @@ class Reg_N:
         for name in names:
             file = name + '.' + fw
             try:
-                arr = np.genfromtxt(os.path.join('stats', file), delimiter=',')
+                arrs = [np.genfromtxt(os.path.join('stats', 'node_{}'.format(node), file), delimiter=',') for node in [1,2,3]]
+                arr = np.concatenate(arrs, axis=0)
             except:
-                print(file, 'missing')
+#                 print(file, 'missing')
                 print()
                 continue
             
             isdense = 1 if name in ['dense', 'final_dense'] else 0
 
             x,y = proc(arr, nodes, isdense=isdense)
-            print(name)
-            self.reg_map[name] = the_train(x,y)
+            print(the_name(name))
+#             self.reg_map[name] = the_train(x,y)
+            self.reg_map[name] = the_score_train(x,y)
 
 def total_time(reg_map, features):
     total = 0
@@ -149,9 +180,9 @@ def total_time(reg_map, features):
     
     return total
 
-def predict(reg, features, epochs, ds, batch):
-    steps = epochs*max(1,ds/reg.nodes/batch)
+def predict(Reg, features, epochs, ds, batch):
+    steps = epochs*max(1,ds/batch/Reg.nodes)
     
-    return steps*total_time(reg.reg_map, features)/1000/1000
+    return steps*total_time(Reg.reg_map, features)/1000/1000
 
 

@@ -21,6 +21,14 @@ from math import sqrt
 def detuple(elem):
     return elem[0] if isinstance(elem, tuple) else elem
 
+def normalize(arr):
+    mean = np.mean(arr)
+    var = np.var(arr)
+    
+    arr = (arr - mean)/var
+    
+    return arr, mean, var
+
 def proc(_arr, nodes, isdense = 0):
     def mymax(x):
         return max(1,x)
@@ -40,34 +48,6 @@ def proc(_arr, nodes, isdense = 0):
     proc_arr = np.delete(arr, nodes_col, 1) # remove nodes column
     
     return proc_arr[:,2:-1], proc_arr[:,-1]
-    
-def the_train(x_train, y_train):
-    model = RandomForestRegressor()
-    model.fit(x_train, y_train)
-    
-    return model 
-
-def the_score_train(x, y):
-#     model = RandomForestRegressor()
-    
-    for model in [LinearRegression(), Ridge(), Lasso(), ElasticNet(), 
-                  KNeighborsRegressor(), DecisionTreeRegressor(), SVR(), RandomForestRegressor()]:
-    
-        x_train, x_test, y_train, y_test = train_test_split(x, y, test_size=0.2)
-        model.fit(x_train, y_train)
-        print('Model: {}'.format(model))
-
-        r2 = model.score(x_test, y_test)
-        print('R^2 Score: {}'.format(r2))
-
-        y_true = y
-        y_pred = model.predict(x)
-        rmse = sqrt(mean_squared_error(y_true, y_pred))
-        print('Root Mean Squared Error: {} ms'.format(rmse/1000))
-
-        print()
-    
-    return model
 
 def the_name(name):
     dct = {
@@ -78,7 +58,8 @@ def the_name(name):
         'drop2d':'Dropout 2D',
         'norm2d':'Batch Normalization',
         'relu2d':'ReLU 2D',
-        'tanh2d':'Tanh 2D'
+        'tanh2d':'Tanh 2D',
+        'flatten2d':'Flatten 2D'
     }
     
     if name in dct.keys():
@@ -94,6 +75,8 @@ class Reg_N:
         
         self.nodes = nodes
         self.reg_map = {}
+        self.fw = fw
+        
         names = ['conv1d', 'conv2d', 
             'avg1d', 'avg2d', 
             'max1d', 'max2d',
@@ -104,85 +87,126 @@ class Reg_N:
             'tanh1d', 'tanh2d',
             'flatten1d', 'flatten2d']
         
+#         data = np.array([['Layer', 'Regressor', 'R^2', 'RMSE']])
+#         with open('scores.{}.n{}'.format(self.fw,self.nodes),'w') as file:
+#             np.savetxt(file, data, delimiter=",", fmt="%s")
+            
         for name in names:
             file = name + '.' + fw
             try:
                 arrs = [np.genfromtxt(os.path.join('stats', 'node_{}'.format(node), file), delimiter=',') for node in [1,2,3]]
                 arr = np.concatenate(arrs, axis=0)
             except:
-#                 print(file, 'missing')
-                print()
+                print(file, 'missing')
                 continue
             
             isdense = 1 if name in ['dense', 'final_dense'] else 0
 
             x,y = proc(arr, nodes, isdense=isdense)
-            print(the_name(name))
-#             self.reg_map[name] = the_train(x,y)
-            self.reg_map[name] = the_score_train(x,y)
-
-def total_time(reg_map, features):
-    total = 0
-    for layer in features:
-        name = layer['name']
-        
-        if name not in reg_map.keys():
-            continue
-        
-        if name in ['conv1d', 'conv2d']:
-            elem = np.array([
-                layer['numf'],
-                layer['channels'],
-                layer['batch'],
-#                 nodes,
-                detuple(layer['kernel']),
-                detuple(layer['stride']),
-                layer['filters']
-            ]).reshape(1,-1)
+            self.x = x
+            self.y = y
             
-        elif name in ['avg1d', 'avg2d', 'max1d', 'max2d']:            
-            elem = np.array([
-                layer['numf'],
-                layer['channels'],
-                layer['batch'],
-#                 nodes,
-                detuple(layer['pool']),
-                detuple(layer['stride'])
-            ]).reshape(1,-1)
-        
-        elif name in ['norm1d', 'norm2d', 'tanh1d', 'tanh2d', 'relu1d', 'relu2d', 'flatten1d', 'flatten2d']:
-            elem = np.array([
-                layer['numf'],
-                layer['channels'],
-                layer['batch'],
-#                 nodes,
-            ]).reshape(1,-1)
-        
-        elif name in ['drop1d', 'drop2d']:
-            elem = np.array([
-                layer['numf'],
-                layer['channels'],
-                layer['batch'],
-#                 nodes,
-                layer['drop']
-            ]).reshape(1,-1)
-        
-        elif name in ['dense','final_dense']:
-            elem = np.array([
-                layer['numf'],
-                layer['batch'],
-#                 nodes,
-                layer['units']
-            ]).reshape(1,-1)
-        
-        [current] = reg_map[name].predict(elem)
-        total += current
-    
-    return total
+            y,mean,var = normalize(y)
+            self.y_norm = y
+            self.mean = mean
+            self.var = var
+            
+            #print(the_name(name))
+            
+#             self.reg_map[name] = self.the_score_train(x,y,name)
+            self.reg_map[name] = self.the_train(x,y)
+            
+    def the_train(self, x_train, y_train):
+        model = RandomForestRegressor()
+        model.fit(x_train, y_train)
 
-def predict(Reg, features, epochs, ds, batch):
-    steps = epochs*max(1,ds/batch/Reg.nodes)
+        return model 
     
-    return steps*total_time(Reg.reg_map, features)/1000/1000
+    def the_score_train(self, x, y, name):
+        for model in [LinearRegression(), Ridge(), Lasso(), ElasticNet(), 
+                      KNeighborsRegressor(), DecisionTreeRegressor(), SVR(), RandomForestRegressor()]:
+
+            x_train, x_test, y_train, y_test = train_test_split(x, y, test_size=0.2)
+            model.fit(x_train, y_train)
+
+            r2 = model.score(x_test, y_test)
+
+            y_true = y
+            y_pred = model.predict(x)
+            rmse = sqrt(mean_squared_error(y_true, y_pred))
+            
+            data = np.array([[the_name(name), model.__class__.__name__, r2, rmse]])
+
+            with open('scores.{}.n{}'.format(self.fw,self.nodes),'a') as file:
+                np.savetxt(file, data, delimiter=",", fmt="%s")
+
+        return model
+
+    def predict(self, features, epochs, ds, batch):
+        steps = epochs*max(1,ds/batch/self.nodes)
+        time = self.mean + self.var*total_time(self.reg_map, features)
+
+        return steps*time/1000/1000
+
+    def total_time(self, features):
+        reg_map = self.reg_map
+        
+        total = 0
+        for layer in features:
+            name = layer['name']
+
+            if name not in reg_map.keys():
+                continue
+
+            if name in ['conv1d', 'conv2d']:
+                elem = np.array([
+                    layer['numf'],
+                    layer['channels'],
+                    layer['batch'],
+                    #nodes,
+                    detuple(layer['kernel']),
+                    detuple(layer['stride']),
+                    layer['filters']
+                ]).reshape(1,-1)
+
+            elif name in ['avg1d', 'avg2d', 'max1d', 'max2d']:            
+                elem = np.array([
+                    layer['numf'],
+                    layer['channels'],
+                    layer['batch'],
+                    #nodes,
+                    detuple(layer['pool']),
+                    detuple(layer['stride'])
+                ]).reshape(1,-1)
+
+            elif name in ['norm1d', 'norm2d', 'tanh1d', 'tanh2d', 'relu1d', 'relu2d', 'flatten1d', 'flatten2d']:
+                elem = np.array([
+                    layer['numf'],
+                    layer['channels'],
+                    layer['batch'],
+                    #nodes,
+                ]).reshape(1,-1)
+
+            elif name in ['drop1d', 'drop2d']:
+                elem = np.array([
+                    layer['numf'],
+                    layer['channels'],
+                    layer['batch'],
+                    #nodes,
+                    layer['drop']
+                ]).reshape(1,-1)
+
+            elif name in ['dense','final_dense']:
+                elem = np.array([
+                    layer['numf'],
+                    layer['batch'],
+                    #nodes,
+                    layer['units']
+                ]).reshape(1,-1)
+
+            [current] = reg_map[name].predict(elem)
+            total += current
+
+        return total
 
 

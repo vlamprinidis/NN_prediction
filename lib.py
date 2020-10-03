@@ -29,13 +29,13 @@ def normalize(arr):
     
     return arr, mean, var
 
-def proc(_arr, nodes, isdense = 0):
+def proc(arr_, nodes, isdense = 0):
     def mymax(x):
         return max(1,x)
     
     nodes_col = 5 - isdense
 
-    arr = _arr[_arr[:,nodes_col] == nodes].copy()
+    arr = arr_[arr_[:,nodes_col] == nodes].copy()
     
     epochs = arr[:,0]
     ds = arr[:,1]
@@ -51,15 +51,15 @@ def proc(_arr, nodes, isdense = 0):
 
 def the_name(name):
     dct = {
-        'conv2d':'Convolutional 2D',
-        'max2d':'Max Pooling 2D',
-        'avg2d':'Average Pooling 2D',
-        'dense':'Fully Connected 2D', 'final_dense':'Fully Connected 2D',
-        'drop2d':'Dropout 2D',
+        'conv2d':'Convolutional',
+        'max2d':'Max Pooling',
+        'avg2d':'Average Pooling',
+        'dense':'Fully Connected', 'final_dense':'Fully Connected',
+        'drop2d':'Dropout',
         'norm2d':'Batch Normalization',
-        'relu2d':'ReLU 2D',
-        'tanh2d':'Tanh 2D',
-        'flatten2d':'Flatten 2D'
+        'relu2d':'ReLU',
+        'tanh2d':'Tanh',
+        'flatten2d':'Flatten'
     }
     
     if name in dct.keys():
@@ -87,9 +87,9 @@ class Reg_N:
             'tanh1d', 'tanh2d',
             'flatten1d', 'flatten2d']
         
-#         data = np.array([['Layer', 'Regressor', 'R^2', 'RMSE']])
-#         with open('scores.{}.n{}'.format(self.fw,self.nodes),'w') as file:
-#             np.savetxt(file, data, delimiter=",", fmt="%s")
+        data = np.array([['Layer', 'Regressor', 'R^2', 'RMSE']])
+        with open('regressors/scores.{}.n{}'.format(self.fw,self.nodes),'w') as file:
+            np.savetxt(file, data, delimiter=",", fmt="%s")
             
         for name in names:
             file = name + '.' + fw
@@ -113,7 +113,9 @@ class Reg_N:
             
             #print(the_name(name))
             
-#             self.reg_map[name] = self.the_score_train(x,y,name)
+            if name != 'dense':
+                self.the_score_train(x,y,name)
+                
             self.reg_map[name] = self.the_train(x,y)
             
     def the_train(self, x_train, y_train):
@@ -137,10 +139,8 @@ class Reg_N:
             
             data = np.array([[the_name(name), model.__class__.__name__, r2, rmse]])
 
-            with open('scores.{}.n{}'.format(self.fw,self.nodes),'a') as file:
+            with open('regressors/scores.{}.n{}'.format(self.fw,self.nodes),'a') as file:
                 np.savetxt(file, data, delimiter=",", fmt="%s")
-
-        return model
 
     def predict(self, features, epochs, ds, batch):
         steps = epochs*max(1,ds/batch/self.nodes)

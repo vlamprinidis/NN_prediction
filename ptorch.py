@@ -20,7 +20,7 @@ parser.add_argument('-batch', type = int, required = True)
 parser.add_argument('-epochs', type = int, required = True)
 args = parser.parse_args()
 
-print('model:',args.model,'dataset size:',args.ds,'numf:',args.numf,'channels:',ch,'out:',args.out)
+print('model:',args.model,'dataset size:',args.ds,'numf:',args.numf,'channels:',args.ch,'out:',args.out)
         
 Model = getattr(ptorch_models, args.model)()
 
@@ -53,5 +53,5 @@ data = np.array([[
     args.nodes,
     the_time
 ]])
-with open('{}_{}.ptorch'.format(args.model, host),'a') as file:
+with open('{}.ptorch'.format(args.model),'a') as file:
     np.savetxt(file, data, delimiter=",", fmt="%s")

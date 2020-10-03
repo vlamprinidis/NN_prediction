@@ -191,4 +191,113 @@ class AlexNet:
         
         return self.model
 
+# 64x64x3
+class My_AlexNet:
+    def create(self):
+        model = Sequential([
+            layers.Conv2D(filters=9, kernel_size=3, strides=2),
+            layers.ReLU(),
+            layers.BatchNormalization(),
+            layers.MaxPool2D(pool_size=2, strides=2),
+            
+            layers.Conv2D(filters=16, kernel_size=2, strides=1),
+            layers.ReLU(),
+            layers.BatchNormalization(),
+            layers.MaxPool2D(pool_size=2, strides=2),
+            
+            layers.Conv2D(filters=16, kernel_size=2, strides=1),
+            layers.ReLU(),
+            layers.BatchNormalization(),
+            
+            layers.Conv2D(filters=16, kernel_size=2, strides=1),
+            layers.ReLU(),
+            layers.BatchNormalization(),
+            
+            layers.Conv2D(filters=9, kernel_size=2, strides=1),
+            layers.ReLU(),
+            layers.BatchNormalization(),
+            layers.MaxPool2D(pool_size=2, strides=2),
+            
+            layers.Flatten(),
+            layers.Dense(512),
+            layers.ReLU(),
+            layers.Dropout(0.5),
+            
+            layers.Dense(64),
+            layers.ReLU(),
+            layers.Dropout(0.5),
+            
+            layers.Dense(10)
+        ])
+        
+        model.compile(loss = loss, optimizer = opt, metrics=['accuracy'])        
+        
+        self.model = model
+        
+        return self.model
+    
+# 128x128x3
+class My_VGG_11:
+    def create(self):
+        model = Sequential()
+        #L1
+        model.add(layers.Conv2D(6, kernel_size = 2, strides = 1))
+        model.add(layers.ReLU())
+        model.add(layers.Dropout(0.4))
+        model.add(layers.MaxPooling2D(pool_size = 2, strides = 2))
+        
+        #L2
+        model.add(layers.Conv2D(6, kernel_size = 2, strides = 1))
+        model.add(layers.ReLU())
+        model.add(layers.Dropout(0.4))
+        model.add(layers.MaxPooling2D(pool_size = 2, strides = 2))
+        
+        #L3
+        model.add(layers.Conv2D(8, kernel_size = 2, strides = 1))
+        model.add(layers.ReLU())
+        model.add(layers.Dropout(0.4))
+        
+        #L4
+        model.add(layers.Conv2D(8, kernel_size = 2, strides = 1))
+        model.add(layers.ReLU())
+        model.add(layers.Dropout(0.4))
+        model.add(layers.MaxPooling2D(pool_size = 2, strides = 2))
+
+        #L5
+        model.add(layers.Conv2D(12, kernel_size = 2, strides = 1))
+        model.add(layers.ReLU())
+        model.add(layers.Dropout(0.4))
+        
+        #L6
+        model.add(layers.Conv2D(12, kernel_size = 2, strides = 1))
+        model.add(layers.ReLU())
+        model.add(layers.Dropout(0.4))
+        model.add(layers.MaxPooling2D(pool_size = 2, strides = 2))
+
+        #L7
+        model.add(layers.Conv2D(12, kernel_size = 2, strides = 1))
+        model.add(layers.ReLU())
+        model.add(layers.Dropout(0.4))
+        
+        #L8
+        model.add(layers.Conv2D(12, kernel_size = 2, strides = 1))
+        model.add(layers.ReLU())
+        model.add(layers.Dropout(0.4))
+        model.add(layers.MaxPooling2D(pool_size = 2, strides = 2))        
+        
+        #L9
+        model.add(Flatten())
+        model.add(Dense(256))
+        
+        #L10
+        model.add(Dense(64))
+        
+        #L11
+        model.add(Dense(10))
+
+        model.compile(loss = loss, optimizer = opt, metrics=['accuracy'])
+        
+        self.model = model
+        
+        return model
     

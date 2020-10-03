@@ -196,5 +196,143 @@ class AlexNet:
         
         return self.model
 
+# 64x64x3
+class My_AlexNet:
+    def create(self):
+        c = convs
+        def m(n):
+            return maxs(n,2,2)
+        
+        l1=m(c(64,3,2))
+        l2=m(c(l1,2,1))
+        l3=c(l2,2,1)
+        l4=c(l3,2,1)
+        l5=m(c(l4,2,1))
+        
+        self.model = nn.Sequential(
+            #L1
+            nn.Conv2d(in_channels=3, out_channels=9, kernel_size=3, stride=2),
+            nn.ReLU(),
+            nn.BatchNorm2d(9),
+            nn.MaxPool2d(kernel_size=2, stride=2),
+            
+            #L2
+            nn.Conv2d(in_channels=9, out_channels=16, kernel_size=2, stride=1),
+            nn.ReLU(),
+            nn.BatchNorm2d(16),
+            nn.MaxPool2d(kernel_size=2, stride=2),
+            
+            #L3
+            nn.Conv2d(in_channels=16, out_channels=16, kernel_size=2, stride=1),
+            nn.ReLU(),
+            nn.BatchNorm2d(16),
+            
+            #L4
+            nn.Conv2d(in_channels=16, out_channels=16, kernel_size=2, stride=1),
+            nn.ReLU(),
+            nn.BatchNorm2d(16),
+            
+            #L5
+            nn.Conv2d(in_channels=16, out_channels=9, kernel_size=2, stride=1),
+            nn.ReLU(),
+            nn.BatchNorm2d(9),
+            nn.MaxPool2d(kernel_size=2, stride=2),
+            
+            #L6
+            nn.Flatten(),
+            nn.Linear(in_features=(l5**2)*9, out_features=512),
+            nn.ReLU(),
+            nn.Dropout2d(0.5),
+            
+            #L7
+            nn.Linear(in_features=512, out_features=64),
+            nn.ReLU(),
+            nn.Dropout2d(0.5),
+            
+            #L8
+            nn.Linear(in_features=64, out_features=10)
+        )
+        
+        return self.model
+
+# 128x128x3
+class My_VGG_11:
+    def create(self):
+        def c(n):
+            return convs(n,2,1)
+        
+        def m(n):
+            return maxs(n,2,2)
+        
+        def mc(n):
+            return m(c(n))
+        
+        l1=mc(128)
+        l2=mc(l1)
+        l3=c(l2)
+        l4=mc(l3)
+        l5=c(l4)
+        l6=mc(l5)
+        l7=c(l6)
+        l8=mc(l7)
+
+        self.model = nn.Sequential(
+            #L1
+            nn.Conv2d(in_channels=3, out_channels=6, kernel_size=2, stride=1),
+            nn.ReLU(),
+            nn.Dropout2d(p=0.4),
+            nn.MaxPool2d(kernel_size=2, stride=2),
+            
+            #L2
+            nn.Conv2d(in_channels=6, out_channels=6, kernel_size=2, stride=1),
+            nn.ReLU(),
+            nn.Dropout2d(p=0.4),
+            nn.MaxPool2d(kernel_size=2, stride=2),
+            
+            #L3
+            nn.Conv2d(in_channels=6, out_channels=8, kernel_size=2, stride=1),
+            nn.ReLU(),
+            nn.Dropout2d(p=0.4),
+            
+            #L4
+            nn.Conv2d(in_channels=8, out_channels=8, kernel_size=2, stride=1),
+            nn.ReLU(),
+            nn.Dropout2d(p=0.4),
+            nn.MaxPool2d(kernel_size=2, stride=2),
+            
+            #L5
+            nn.Conv2d(in_channels=8, out_channels=12, kernel_size=2, stride=1),
+            nn.ReLU(),
+            nn.Dropout2d(p=0.4),
+            
+            #L6
+            nn.Conv2d(in_channels=12, out_channels=12, kernel_size=2, stride=1),
+            nn.ReLU(),
+            nn.Dropout2d(p=0.4),
+            nn.MaxPool2d(kernel_size=2, stride=2),
+            
+            #L7
+            nn.Conv2d(in_channels=12, out_channels=12, kernel_size=2, stride=1),
+            nn.ReLU(),
+            nn.Dropout2d(p=0.4),
+            
+            #L8
+            nn.Conv2d(in_channels=12, out_channels=12, kernel_size=2, stride=1),
+            nn.ReLU(),
+            nn.Dropout2d(p=0.4),
+            nn.MaxPool2d(kernel_size=2, stride=2),
+            
+            #L9
+            nn.Flatten(),
+            nn.Linear(in_features=(l8**2)*12, out_features=256),
+            
+            #L10
+            nn.Linear(in_features=256, out_features=64),
+            
+            #L11
+            nn.Linear(in_features=64, out_features=10)
+        )
+        
+        return self.model    
 
     

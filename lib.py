@@ -97,7 +97,7 @@ class Reg_N:
                 arrs = [np.genfromtxt(os.path.join('stats', 'node_{}'.format(node), file), delimiter=',') for node in [1,2,3]]
                 arr = np.concatenate(arrs, axis=0)
             except:
-                print(file, 'missing')
+#                 print(file, 'missing')
                 continue
             
             isdense = 1 if name in ['dense', 'final_dense'] else 0
@@ -107,16 +107,13 @@ class Reg_N:
             self.y = y
             
             y,mean,var = normalize(y)
-            self.y_norm = y
-            self.mean = mean
-            self.var = var
             
             #print(the_name(name))
             
-            if name != 'dense':
-                self.the_score_train(x,y,name)
+#             if name != 'dense':
+#                 self.the_score_train(x,y,name)
                 
-            self.reg_map[name] = self.the_train(x,y)
+            self.reg_map[name] = (self.the_train(x,y),mean,var)
             
     def the_train(self, x_train, y_train):
         model = RandomForestRegressor()
@@ -144,7 +141,7 @@ class Reg_N:
 
     def predict(self, features, epochs, ds, batch):
         steps = epochs*max(1,ds/batch/self.nodes)
-        time = self.mean + self.var*total_time(self.reg_map, features)
+        time = self.total_time(features)
 
         return steps*time/1000/1000
 
@@ -204,8 +201,10 @@ class Reg_N:
                     layer['units']
                 ]).reshape(1,-1)
 
-            [current] = reg_map[name].predict(elem)
-            total += current
+            model,mean,var = reg_map[name]
+            [current] = model.predict(elem)
+            
+            total += mean + var*current
 
         return total
 

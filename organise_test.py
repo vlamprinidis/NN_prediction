@@ -20,5 +20,5 @@ def give_df(file):
     
     x = x.groupby(by=names[:-1]).mean()
     
-    return x
+    return x.reset_index()
 

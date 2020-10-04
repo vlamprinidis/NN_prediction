@@ -255,14 +255,14 @@ class My_AlexNet:
         
         return self.model
 
-# 128x128x3
+# 64x64x3
 class My_VGG_11:
     def create(self):
         def c(n):
-            return convs(n,2,1)
+            return convs(n,8,1)
         
         def m(n):
-            return maxs(n,2,2)
+            return maxs(n,2,1)
         
         def mc(n):
             return m(c(n))
@@ -278,49 +278,49 @@ class My_VGG_11:
 
         self.model = nn.Sequential(
             #L1
-            nn.Conv2d(in_channels=3, out_channels=6, kernel_size=2, stride=1),
+            nn.Conv2d(in_channels=3, out_channels=6, kernel_size=8, stride=1),
             nn.ReLU(),
             nn.Dropout2d(p=0.4),
-            nn.MaxPool2d(kernel_size=2, stride=2),
+            nn.MaxPool2d(kernel_size=2, stride=1),
             
             #L2
-            nn.Conv2d(in_channels=6, out_channels=6, kernel_size=2, stride=1),
+            nn.Conv2d(in_channels=6, out_channels=6, kernel_size=8, stride=1),
             nn.ReLU(),
             nn.Dropout2d(p=0.4),
-            nn.MaxPool2d(kernel_size=2, stride=2),
+            nn.MaxPool2d(kernel_size=2, stride=1),
             
             #L3
-            nn.Conv2d(in_channels=6, out_channels=8, kernel_size=2, stride=1),
+            nn.Conv2d(in_channels=6, out_channels=8, kernel_size=8, stride=1),
             nn.ReLU(),
             nn.Dropout2d(p=0.4),
             
             #L4
-            nn.Conv2d(in_channels=8, out_channels=8, kernel_size=2, stride=1),
+            nn.Conv2d(in_channels=8, out_channels=8, kernel_size=8, stride=1),
             nn.ReLU(),
             nn.Dropout2d(p=0.4),
-            nn.MaxPool2d(kernel_size=2, stride=2),
+            nn.MaxPool2d(kernel_size=2, stride=1),
             
             #L5
-            nn.Conv2d(in_channels=8, out_channels=12, kernel_size=2, stride=1),
+            nn.Conv2d(in_channels=8, out_channels=12, kernel_size=8, stride=1),
             nn.ReLU(),
             nn.Dropout2d(p=0.4),
             
             #L6
-            nn.Conv2d(in_channels=12, out_channels=12, kernel_size=2, stride=1),
+            nn.Conv2d(in_channels=12, out_channels=12, kernel_size=8, stride=1),
             nn.ReLU(),
             nn.Dropout2d(p=0.4),
-            nn.MaxPool2d(kernel_size=2, stride=2),
+            nn.MaxPool2d(kernel_size=2, stride=1),
             
             #L7
-            nn.Conv2d(in_channels=12, out_channels=12, kernel_size=2, stride=1),
+            nn.Conv2d(in_channels=12, out_channels=12, kernel_size=8, stride=1),
             nn.ReLU(),
             nn.Dropout2d(p=0.4),
             
             #L8
-            nn.Conv2d(in_channels=12, out_channels=12, kernel_size=2, stride=1),
+            nn.Conv2d(in_channels=12, out_channels=12, kernel_size=8, stride=1),
             nn.ReLU(),
             nn.Dropout2d(p=0.4),
-            nn.MaxPool2d(kernel_size=2, stride=2),
+            nn.MaxPool2d(kernel_size=2, stride=1),
             
             #L9
             nn.Flatten(),

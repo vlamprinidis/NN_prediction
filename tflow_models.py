@@ -236,54 +236,54 @@ class My_AlexNet:
         
         return self.model
     
-# 128x128x3
+# 64x64x3
 class My_VGG_11:
     def create(self):
         model = Sequential()
         #L1
-        model.add(layers.Conv2D(6, kernel_size = 2, strides = 1))
+        model.add(layers.Conv2D(6, kernel_size = 8, strides = 1))
         model.add(layers.ReLU())
         model.add(layers.Dropout(0.4))
-        model.add(layers.MaxPooling2D(pool_size = 2, strides = 2))
+        model.add(layers.MaxPooling2D(pool_size = 2, strides = 1))
         
         #L2
-        model.add(layers.Conv2D(6, kernel_size = 2, strides = 1))
+        model.add(layers.Conv2D(6, kernel_size = 8, strides = 1))
         model.add(layers.ReLU())
         model.add(layers.Dropout(0.4))
-        model.add(layers.MaxPooling2D(pool_size = 2, strides = 2))
+        model.add(layers.MaxPooling2D(pool_size = 2, strides = 1))
         
         #L3
-        model.add(layers.Conv2D(8, kernel_size = 2, strides = 1))
+        model.add(layers.Conv2D(8, kernel_size = 8, strides = 1))
         model.add(layers.ReLU())
         model.add(layers.Dropout(0.4))
         
         #L4
-        model.add(layers.Conv2D(8, kernel_size = 2, strides = 1))
+        model.add(layers.Conv2D(8, kernel_size = 8, strides = 1))
         model.add(layers.ReLU())
         model.add(layers.Dropout(0.4))
-        model.add(layers.MaxPooling2D(pool_size = 2, strides = 2))
+        model.add(layers.MaxPooling2D(pool_size = 2, strides = 1))
 
         #L5
-        model.add(layers.Conv2D(12, kernel_size = 2, strides = 1))
+        model.add(layers.Conv2D(12, kernel_size = 8, strides = 1))
         model.add(layers.ReLU())
         model.add(layers.Dropout(0.4))
         
         #L6
-        model.add(layers.Conv2D(12, kernel_size = 2, strides = 1))
+        model.add(layers.Conv2D(12, kernel_size = 8, strides = 1))
         model.add(layers.ReLU())
         model.add(layers.Dropout(0.4))
-        model.add(layers.MaxPooling2D(pool_size = 2, strides = 2))
+        model.add(layers.MaxPooling2D(pool_size = 2, strides = 1))
 
         #L7
-        model.add(layers.Conv2D(12, kernel_size = 2, strides = 1))
+        model.add(layers.Conv2D(12, kernel_size = 8, strides = 1))
         model.add(layers.ReLU())
         model.add(layers.Dropout(0.4))
         
         #L8
-        model.add(layers.Conv2D(12, kernel_size = 2, strides = 1))
+        model.add(layers.Conv2D(12, kernel_size = 8, strides = 1))
         model.add(layers.ReLU())
         model.add(layers.Dropout(0.4))
-        model.add(layers.MaxPooling2D(pool_size = 2, strides = 2))        
+        model.add(layers.MaxPooling2D(pool_size = 2, strides = 1))        
         
         #L9
         model.add(Flatten())

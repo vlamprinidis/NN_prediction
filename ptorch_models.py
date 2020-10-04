@@ -267,7 +267,7 @@ class My_VGG_11:
         def mc(n):
             return m(c(n))
         
-        l1=mc(128)
+        l1=mc(64)
         l2=mc(l1)
         l3=c(l2)
         l4=mc(l3)

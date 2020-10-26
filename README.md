@@ -1,0 +1,1 @@
+Code used to collect training times of some convolutional neural networks, for the purpose of writing a diploma thesis called "Predicting the training time of neural networks, in distributed systems, through profiling their operators".

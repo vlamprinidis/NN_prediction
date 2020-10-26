@@ -1,1 +1,1 @@
-Code used to profile operators that contsitute convolutional neural networks, for the purpose of writing a diploma thesis called "Predicting the training time of neural networks, in distributed systems, through profiling their operators".
+Code used to profile operators that contsitute convolutional neural networks.
